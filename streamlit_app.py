@@ -64,7 +64,6 @@ st.markdown(
                 #0a0f1c 50%,
                 #080b14 100%
             );
-
         color: #f5f5f5;
     }
 
@@ -107,32 +106,14 @@ st.markdown(
         background:
             radial-gradient(
                 circle at 50% 0%,
-                rgba(255,100,20,0.18),
+                rgba(255,100,20,0.16),
                 transparent 55%
             ),
             #111827;
-
-        border: 1px solid rgba(255,120,30,0.30);
+        border: 1px solid rgba(255,120,30,0.25);
         border-radius: 18px;
         padding: 28px;
         text-align: center;
-        min-height: 220px;
-    }
-
-    .current-card {
-        background:
-            radial-gradient(
-                circle at 50% 0%,
-                rgba(255,170,30,0.15),
-                transparent 55%
-            ),
-            #111827;
-
-        border: 1px solid rgba(255,170,30,0.30);
-        border-radius: 18px;
-        padding: 28px;
-        text-align: center;
-        min-height: 220px;
     }
 
     .prediction-label {
@@ -142,9 +123,9 @@ st.markdown(
     }
 
     .prediction-value {
-        font-size: 58px;
+        font-size: 52px;
         font-weight: 800;
-        margin: 10px 0;
+        margin: 8px 0;
     }
 
     .prediction-note {
@@ -152,52 +133,24 @@ st.markdown(
         font-size: 13px;
     }
 
-    .flare-class-card {
-        background: #111827;
+    .current-flare {
+        background: rgba(18, 24, 39, 0.92);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
-        padding: 20px 10px;
-        text-align: center;
-        min-height: 145px;
+        padding: 14px 20px;
+        margin-bottom: 15px;
     }
 
-    .flare-letter {
-        font-size: 32px;
-        font-weight: 800;
-    }
-
-    .flare-description {
+    .current-label {
         color: #9da6b8;
-        font-size: 13px;
-        margin-top: 8px;
+        font-size: 12px;
+        letter-spacing: 1px;
     }
 
-    .eval-box {
-        background: #111827;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 15px;
-        padding: 20px;
-        text-align: center;
-    }
-
-    .eval-number {
-        font-size: 30px;
+    .current-value {
+        font-size: 25px;
         font-weight: 700;
-    }
-
-    .eval-label {
-        color: #9da6b8;
-        font-size: 13px;
-    }
-
-    .demo-note {
-        background: rgba(255, 170, 30, 0.08);
-        border: 1px solid rgba(255, 170, 30, 0.20);
-        border-radius: 10px;
-        padding: 12px 16px;
-        color: #cbd2df;
-        font-size: 13px;
-        margin-top: 10px;
+        margin-top: 3px;
     }
 
     .footer {
@@ -253,7 +206,9 @@ with c2:
 with c3:
     st.metric(
         "Updated",
-        current_time.strftime("%d %b %Y, %I:%M %p IST")
+        current_time.strftime(
+            "%d %b %Y, %I:%M %p IST"
+        )
     )
 
 
@@ -287,7 +242,7 @@ with obs1:
     )
 
     st.caption(
-        "Real-time solar magnetic-field observation from NASA SDO/HMI."
+        "Real solar magnetic-field observation from SDO/HMI."
     )
 
     st.markdown(
@@ -314,13 +269,37 @@ with obs2:
     )
 
     st.caption(
-        "Real-time ultraviolet solar observation from NASA SDO/AIA."
+        "Real ultraviolet solar observation from SDO/AIA."
     )
 
     st.markdown(
         '</div>',
         unsafe_allow_html=True
     )
+
+
+# ============================================================
+# CURRENT FLARE
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">🌞 Current Flare</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="current-flare">
+        <div class="current-label">
+            CURRENT OBSERVED FLARE
+        </div>
+        <div class="current-value">
+            NONE
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -332,42 +311,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-p1, p2 = st.columns(2)
+p1, p2 = st.columns([1, 1.7])
 
 
-# ============================================================
-# CURRENT FLARE — SAMPLE
-# ============================================================
+# ---------------- PREDICTION OUTPUT ----------------
 
 with p1:
-
-    st.markdown(
-        """
-        <div class="current-card">
-
-            <div class="prediction-label">
-                CURRENT OBSERVED FLARE
-            </div>
-
-            <div class="prediction-value">
-                A
-            </div>
-
-            <div class="prediction-note">
-                Sample value for dashboard demonstration
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# ============================================================
-# NEXT 24 HOUR PREDICTION — SAMPLE
-# ============================================================
-
-with p2:
 
     st.markdown(
         """
@@ -378,11 +327,11 @@ with p2:
             </div>
 
             <div class="prediction-value">
-                C
+                —
             </div>
 
             <div class="prediction-note">
-                Sample model output
+                Prediction will appear after model inference
             </div>
 
         </div>
@@ -391,114 +340,40 @@ with p2:
     )
 
 
-st.markdown(
-    """
-    <div class="demo-note">
-        <b>Prototype mode:</b>
-        The current flare and next-24-hour prediction shown above
-        are sample values for demonstrating the dashboard.
-        They will be replaced by the trained forecasting model during
-        final implementation.
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# ---------------- PREDICTION DESCRIPTION ----------------
 
+with p2:
 
-# ============================================================
-# FLARE CLASSIFICATION
-# ============================================================
+    st.markdown(
+        """
+        <div class="card">
 
-st.markdown(
-    '<div class="section-title">☀️ Flare Classification</div>',
-    unsafe_allow_html=True
-)
+            <h3>Forecasting Approach</h3>
 
-st.caption(
-    "The system considers all five standard GOES soft X-ray flare classes."
-)
+            <p>
+            Solar observations and recent flare activity are used
+            as inputs for forecasting future solar flare activity.
+            </p>
 
-f1, f2, f3, f4, f5 = st.columns(5)
+            <p>
+            <b>Observation Data</b>
+            → Feature Extraction
+            → Temporal Analysis
+            → Flare Forecast
+            </p>
 
+            <p style="text-align:center; font-size:20px;">
+            ↓
+            </p>
 
-flare_classes = [
-    ("A", "Lowest X-ray activity"),
-    ("B", "Low-level flare activity"),
-    ("C", "Moderate flare activity"),
-    ("M", "Strong flare activity"),
-    ("X", "Highest flare activity")
-]
+            <p style="text-align:center;">
+            <b>Next 24-Hour Flare Risk</b>
+            </p>
 
-columns = [f1, f2, f3, f4, f5]
-
-for column, (letter, description) in zip(columns, flare_classes):
-
-    with column:
-
-        st.markdown(
-            f"""
-            <div class="flare-class-card">
-
-                <div class="flare-letter">
-                    {letter}
-                </div>
-
-                <div class="flare-description">
-                    {description}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-# ============================================================
-# MODEL EVALUATION
-# ============================================================
-
-st.markdown(
-    '<div class="section-title">📊 Model Evaluation</div>',
-    unsafe_allow_html=True
-)
-
-e1, e2, e3, e4 = st.columns(4)
-
-metrics = [
-    ("—", "TSS"),
-    ("—", "Accuracy"),
-    ("—", "Precision"),
-    ("—", "Recall")
-]
-
-for column, (value, label) in zip(
-    [e1, e2, e3, e4],
-    metrics
-):
-
-    with column:
-
-        st.markdown(
-            f"""
-            <div class="eval-box">
-
-                <div class="eval-number">
-                    {value}
-                </div>
-
-                <div class="eval-label">
-                    {label}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-st.caption(
-    "Evaluation metrics will be added after the forecasting model "
-    "is trained and validated."
-)
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -533,7 +408,7 @@ try:
     else:
 
         # ----------------------------------------------------
-        # Convert NOAA UTC timestamps to IST
+        # CONVERT NOAA UTC TIME TO IST
         # ----------------------------------------------------
 
         flare_df["max_time"] = pd.to_datetime(
@@ -546,6 +421,8 @@ try:
             flare_df["max_time"]
             .dt.tz_convert(IST)
         )
+
+        # newest first
 
         flare_df = flare_df.sort_values(
             "max_time",
@@ -593,7 +470,7 @@ try:
         )
 
         st.caption(
-            "Source: NOAA / SWPC GOES X-ray observations. "
+            "Source: NOAA GOES X-ray flare observations. "
             "Times displayed in IST."
         )
 
@@ -609,12 +486,6 @@ try:
             unsafe_allow_html=True
         )
 
-        graph_df = flare_df.copy()
-
-
-        # ----------------------------------------------------
-        # Convert flare class into numerical activity level
-        # ----------------------------------------------------
 
         def flare_level(flare_class):
 
@@ -624,7 +495,10 @@ try:
             try:
 
                 letter = flare_class[0].upper()
-                number = float(flare_class[1:])
+
+                number = float(
+                    flare_class[1:]
+                )
 
                 base = {
                     "A": 0,
@@ -637,12 +511,17 @@ try:
                 if letter not in base:
                     return None
 
-                return base[letter] + number / 10
+                return (
+                    base[letter]
+                    + number / 10
+                )
 
             except Exception:
 
                 return None
 
+
+        graph_df = flare_df.copy()
 
         graph_df["Activity Level"] = (
             graph_df["max_class"]
@@ -689,7 +568,7 @@ try:
             )
 
             st.caption(
-                "Activity level is derived from observed "
+                "Activity level derived from observed "
                 "NOAA GOES flare classes."
             )
 
@@ -702,13 +581,13 @@ try:
 
 except Exception:
 
-    st.warning(
-        "Live NOAA flare data could not be loaded right now."
+    st.error(
+        "NOAA flare data could not be loaded right now."
     )
 
     st.caption(
-        "The solar observation and prediction sections "
-        "remain available."
+        "Recent flare observations will reappear "
+        "when the NOAA data service is available."
     )
 
 
