@@ -177,7 +177,7 @@ st.markdown(
 
 st.markdown(
     '<div class="subtitle">'
-    'Solar activity monitoring and Early Warning of Solar Flares'
+    'Deep Learning Based Solar Flare Classification and 24-Hour Flare Risk Forecasting'
     '</div>',
     unsafe_allow_html=True
 )
