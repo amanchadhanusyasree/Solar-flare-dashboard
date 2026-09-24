@@ -340,7 +340,6 @@ with obs2:
         unsafe_allow_html=True
     )
 
-
 # ============================================================
 # FLARE PREDICTION
 # ============================================================
@@ -350,179 +349,93 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# ------------------------------------------------------------
+# SAMPLE CURRENT FLARE
+# ------------------------------------------------------------
 
-# ============================================================
-# ALL 5 FLARE CLASSES
-# ============================================================
+st.markdown("""
+<div class="card">
 
-st.subheader("Next 24-Hour Flare Classification")
+    <div style="color:#9da6b8; font-size:14px; letter-spacing:1px;">
+        CURRENT OBSERVED FLARE
+    </div>
 
-st.caption(
-    "The trained forecasting model will provide the class "
-    "probabilities after model integration."
-)
+    <div style="
+        font-size:42px;
+        font-weight:800;
+        margin-top:6px;
+    ">
+        A
+    </div>
 
-flare_classes = [
-    ("A", "Lowest X-ray flare level"),
-    ("B", "Low-level flare activity"),
-    ("C", "Moderate flare activity"),
-    ("M", "Strong flare activity"),
-    ("X", "Highest flare activity")
-]
+    <div style="color:#9da6b8; font-size:13px;">
+        Sample observation for dashboard demonstration
+    </div>
 
-class_cols = st.columns(5)
-
-for col, (flare_class, description) in zip(
-    class_cols,
-    flare_classes
-):
-
-    with col:
-
-        st.markdown(
-            f"""
-            <div class="flare-class-card">
-                <div class="flare-class-name">
-                    {flare_class}
-                </div>
-                <div class="flare-class-description">
-                    {description}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.metric(
-            label="Model output",
-            value="Pending"
-        )
+</div>
+""", unsafe_allow_html=True)
 
 
-# ============================================================
-# CURRENT / RECENT REAL FLARES
-# ============================================================
+# ------------------------------------------------------------
+# NEXT 24-HOUR PREDICTION
+# ------------------------------------------------------------
 
-st.markdown(
-    '<div class="section-title">'
-    '🚨 Current & Recent Solar Flares'
-    '</div>',
-    unsafe_allow_html=True
-)
+p1, p2 = st.columns([1, 1.7])
 
-if noaa_available:
+with p1:
 
-    current_flares = flare_df.head(8).copy()
+    st.markdown("""
+    <div class="prediction-card">
 
-    current_table = pd.DataFrame({
+        <div class="prediction-label">
+            NEXT 24-HOUR FLARE PREDICTION
+        </div>
 
-        "Time (IST)": current_flares[
-            "max_time_ist"
-        ].dt.strftime(
-            "%d %b %Y  %I:%M %p"
-        ),
+        <div class="prediction-value">
+            —
+        </div>
 
-        "Flare Class": current_flares[
-            "max_class"
-        ].astype(str),
+        <div class="prediction-note">
+            Model prediction will appear after trained-model inference
+        </div>
 
-        "Satellite": (
-            "GOES-"
-            + current_flares[
-                "satellite"
-            ].astype(str)
-        )
-    })
-
-    st.dataframe(
-        current_table,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.caption(
-        "Real observed GOES flare events from NOAA/SWPC. "
-        "All times are displayed in IST."
-    )
-
-else:
-
-    st.warning(
-        "Live NOAA flare data could not be loaded right now."
-    )
+    </div>
+    """, unsafe_allow_html=True)
 
 
-# ============================================================
-# FORECAST STATUS
-# ============================================================
+# ------------------------------------------------------------
+# FIVE FLARE CLASSES
+# ------------------------------------------------------------
 
-st.markdown(
-    '<div class="section-title">'
-    '🎯 Forecast Status'
-    '</div>',
-    unsafe_allow_html=True
-)
+with p2:
 
-status_col1, status_col2 = st.columns(2)
+    st.markdown("""
+    <div class="scale-box">
 
-with status_col1:
+        <h3>Solar Flare Classes</h3>
 
-    st.markdown(
-        '<div class="prediction-card">',
-        unsafe_allow_html=True
-    )
+        <div class="scale-item">
+            <b>A</b> — Lowest X-ray flare class
+        </div>
 
-    st.markdown(
-        '<div class="prediction-label">'
-        'NEXT 24-HOUR FORECAST'
-        '</div>',
-        unsafe_allow_html=True
-    )
+        <div class="scale-item">
+            <b>B</b> — Low-level flare activity
+        </div>
 
-    st.markdown(
-        '<div class="prediction-value">'
-        'MODEL PENDING'
-        '</div>',
-        unsafe_allow_html=True
-    )
+        <div class="scale-item">
+            <b>C</b> — Moderate flare activity
+        </div>
 
-    st.markdown(
-        '<div class="prediction-note">'
-        'Waiting for trained model inference'
-        '</div>',
-        unsafe_allow_html=True
-    )
+        <div class="scale-item">
+            <b>M</b> — Strong flare activity
+        </div>
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True
-    )
+        <div class="scale-item">
+            <b>X</b> — Highest flare class
+        </div>
 
-
-with status_col2:
-
-    st.markdown(
-        '<div class="card">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("Forecast Target")
-
-    st.write(
-        "Estimate the likelihood of A, B, C, M and X-class "
-        "solar flare activity during the next 24 hours."
-    )
-
-    st.write(
-        "Current observed flare activity is obtained from "
-        "NOAA GOES X-ray observations."
-    )
-
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True
-    )
-
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================================
 # MODEL EVALUATION
