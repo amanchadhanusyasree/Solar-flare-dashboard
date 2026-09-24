@@ -199,7 +199,7 @@ with c1:
 
 with c2:
     st.metric(
-        "Forecast Horizon",
+        "predicated",
         "EARLY WARNING"
     )
 with c3:
@@ -209,8 +209,6 @@ with c3:
             "%d %b %Y, %I:%M %p IST"
         )
     )
-
-
 # ============================================================
 # SOLAR OBSERVATIONS
 # ============================================================
