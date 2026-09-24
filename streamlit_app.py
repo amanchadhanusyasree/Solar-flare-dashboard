@@ -27,7 +27,6 @@ NOAA_FLARE_URL = (
     "goes/primary/xray-flares-7-day.json"
 )
 
-# NASA SDO latest images
 HMI_IMAGE = (
     "https://sdo.gsfc.nasa.gov/assets/img/latest/"
     "latest_1024_HMIIF.jpg"
@@ -65,7 +64,6 @@ st.markdown(
                 #0a0f1c 50%,
                 #080b14 100%
             );
-
         color: #f5f5f5;
     }
 
@@ -91,7 +89,7 @@ st.markdown(
     .section-title {
         font-size: 25px;
         font-weight: 700;
-        margin-top: 30px;
+        margin-top: 28px;
         margin-bottom: 15px;
     }
 
@@ -112,7 +110,6 @@ st.markdown(
                 transparent 55%
             ),
             #111827;
-
         border: 1px solid rgba(255,120,30,0.25);
         border-radius: 18px;
         padding: 28px;
@@ -136,58 +133,31 @@ st.markdown(
         font-size: 13px;
     }
 
-    .classification-card {
+    .current-flare {
         background: rgba(18, 24, 39, 0.92);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 20px;
-    }
-
-    .classification-item {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 12px;
-        padding: 18px 10px;
-        text-align: center;
-    }
-
-    .classification-letter {
-        font-size: 30px;
-        font-weight: 800;
-    }
-
-    .classification-description {
-        color: #9da6b8;
-        font-size: 13px;
-        margin-top: 4px;
-    }
-
-    .current-flare-box {
-        background: #111827;
-        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
-        padding: 16px;
-        text-align: center;
-        margin-bottom: 10px;
+        padding: 14px 20px;
+        margin-bottom: 15px;
     }
 
-    .current-flare-label {
+    .current-label {
         color: #9da6b8;
         font-size: 12px;
         letter-spacing: 1px;
     }
 
-    .current-flare-value {
+    .current-value {
         font-size: 25px;
         font-weight: 700;
-        margin-top: 5px;
+        margin-top: 3px;
     }
 
     .footer {
         text-align: center;
         color: #70798b;
         font-size: 12px;
-        margin-top: 12px;
+        margin-top: 30px;
     }
 
     </style>
@@ -254,9 +224,7 @@ st.markdown(
 obs1, obs2 = st.columns(2)
 
 
-# ------------------------------------------------------------
-# HMI
-# ------------------------------------------------------------
+# ---------------- HMI ----------------
 
 with obs1:
 
@@ -283,9 +251,7 @@ with obs1:
     )
 
 
-# ------------------------------------------------------------
-# AIA
-# ------------------------------------------------------------
+# ---------------- AIA ----------------
 
 with obs2:
 
@@ -313,6 +279,30 @@ with obs2:
 
 
 # ============================================================
+# CURRENT FLARE
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">🌞 Current Flare</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="current-flare">
+        <div class="current-label">
+            CURRENT OBSERVED FLARE
+        </div>
+        <div class="current-value">
+            NONE
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
 # FLARE PREDICTION
 # ============================================================
 
@@ -324,9 +314,7 @@ st.markdown(
 p1, p2 = st.columns([1, 1.7])
 
 
-# ------------------------------------------------------------
-# PREDICTION OUTPUT
-# ------------------------------------------------------------
+# ---------------- PREDICTION OUTPUT ----------------
 
 with p1:
 
@@ -352,9 +340,7 @@ with p1:
     )
 
 
-# ------------------------------------------------------------
-# FORECASTING APPROACH
-# ------------------------------------------------------------
+# ---------------- PREDICTION DESCRIPTION ----------------
 
 with p2:
 
@@ -365,188 +351,29 @@ with p2:
             <h3>Forecasting Approach</h3>
 
             <p>
-                Solar observations and recent flare activity
-                can be used as inputs for forecasting future
-                solar flare activity.
+            Solar observations and recent flare activity are used
+            as inputs for forecasting future solar flare activity.
             </p>
 
             <p>
-                <b>Observation Data</b>
-                → Feature Extraction
-                → Temporal Analysis
-                → Flare Forecast
+            <b>Observation Data</b>
+            → Feature Extraction
+            → Temporal Analysis
+            → Flare Forecast
             </p>
 
-            <p style="text-align:center; font-size:22px;">
-                ↓
+            <p style="text-align:center; font-size:20px;">
+            ↓
             </p>
 
             <p style="text-align:center;">
-                <b>Next 24-Hour Flare Risk</b>
+            <b>Next 24-Hour Flare Risk</b>
             </p>
 
         </div>
         """,
         unsafe_allow_html=True
     )
-
-
-# ============================================================
-# FLARE CLASSIFICATION
-# ============================================================
-
-st.markdown(
-    '<div class="section-title">☀️ Flare Classification</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div class="classification-card">
-
-        <p style="color:#a9b1c2; margin-bottom:18px;">
-            Solar X-ray flares are classified into five standard
-            classes according to their X-ray intensity.
-        </p>
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-class1, class2, class3, class4, class5 = st.columns(5)
-
-
-# A
-with class1:
-
-    st.markdown(
-        """
-        <div class="classification-item">
-
-            <div class="classification-letter">
-                A
-            </div>
-
-            <div class="classification-description">
-                Very low
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# B
-with class2:
-
-    st.markdown(
-        """
-        <div class="classification-item">
-
-            <div class="classification-letter">
-                B
-            </div>
-
-            <div class="classification-description">
-                Low
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# C
-with class3:
-
-    st.markdown(
-        """
-        <div class="classification-item">
-
-            <div class="classification-letter">
-                C
-            </div>
-
-            <div class="classification-description">
-                Moderate
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# M
-with class4:
-
-    st.markdown(
-        """
-        <div class="classification-item">
-
-            <div class="classification-letter">
-                M
-            </div>
-
-            <div class="classification-description">
-                Strong
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# X
-with class5:
-
-    st.markdown(
-        """
-        <div class="classification-item">
-
-            <div class="classification-letter">
-                X
-            </div>
-
-            <div class="classification-description">
-                Highest
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# ============================================================
-# CURRENT FLARES
-# ============================================================
-
-st.markdown(
-    '<div class="section-title">🔥 Current Flares</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div class="current-flare-box">
-
-        <div class="current-flare-label">
-            CURRENT FLARES
-        </div>
-
-        <div class="current-flare-value">
-            None
-        </div>
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # ============================================================
@@ -568,10 +395,6 @@ def load_flare_data():
     return pd.DataFrame(data)
 
 
-# ============================================================
-# REAL NOAA FLARE INFORMATION
-# ============================================================
-
 try:
 
     flare_df = load_flare_data()
@@ -585,9 +408,7 @@ try:
     else:
 
         # ----------------------------------------------------
-        # TIME CONVERSION
-        # NOAA timestamps are UTC.
-        # Dashboard displays them in IST.
+        # CONVERT NOAA UTC TIME TO IST
         # ----------------------------------------------------
 
         flare_df["max_time"] = pd.to_datetime(
@@ -601,7 +422,7 @@ try:
             .dt.tz_convert(IST)
         )
 
-        # Sort newest first
+        # newest first
 
         flare_df = flare_df.sort_values(
             "max_time",
@@ -622,26 +443,25 @@ try:
 
         recent_df = flare_df.head(10).copy()
 
-        recent_table = pd.DataFrame(
-            {
-                "Time (IST)": recent_df[
-                    "max_time_ist"
-                ].dt.strftime(
-                    "%d %b %Y  %I:%M %p"
-                ),
+        recent_table = pd.DataFrame({
 
-                "Flare Class": recent_df[
-                    "max_class"
-                ].astype(str),
+            "Time (IST)": recent_df[
+                "max_time_ist"
+            ].dt.strftime(
+                "%d %b %Y  %I:%M %p"
+            ),
 
-                "Satellite": (
-                    "GOES-"
-                    + recent_df[
-                        "satellite"
-                    ].astype(str)
-                )
-            }
-        )
+            "Flare Class": recent_df[
+                "max_class"
+            ].astype(str),
+
+            "Satellite": (
+                "GOES-"
+                + recent_df[
+                    "satellite"
+                ].astype(str)
+            )
+        })
 
         st.dataframe(
             recent_table,
@@ -666,19 +486,10 @@ try:
             unsafe_allow_html=True
         )
 
-        graph_df = flare_df.copy()
-
-
-        # ----------------------------------------------------
-        # CONVERT FLARE CLASS TO NUMERIC ACTIVITY LEVEL
-        # ----------------------------------------------------
 
         def flare_level(flare_class):
 
-            if not isinstance(
-                flare_class,
-                str
-            ):
+            if not isinstance(flare_class, str):
                 return None
 
             try:
@@ -710,11 +521,12 @@ try:
                 return None
 
 
+        graph_df = flare_df.copy()
+
         graph_df["Activity Level"] = (
             graph_df["max_class"]
             .apply(flare_level)
         )
-
 
         graph_df = graph_df.dropna(
             subset=[
@@ -722,11 +534,6 @@ try:
                 "Activity Level"
             ]
         )
-
-
-        # ----------------------------------------------------
-        # SORT FOR GRAPH
-        # ----------------------------------------------------
 
         graph_df = graph_df.sort_values(
             "max_time"
@@ -779,8 +586,8 @@ except Exception:
     )
 
     st.caption(
-        "The dashboard will continue to display the "
-        "solar observation panels."
+        "Recent flare observations will reappear "
+        "when the NOAA data service is available."
     )
 
 
