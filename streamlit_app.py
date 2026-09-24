@@ -64,6 +64,7 @@ st.markdown(
                 #0a0f1c 50%,
                 #080b14 100%
             );
+
         color: #f5f5f5;
     }
 
@@ -110,6 +111,7 @@ st.markdown(
                 transparent 55%
             ),
             #111827;
+
         border: 1px solid rgba(255,120,30,0.25);
         border-radius: 18px;
         padding: 28px;
@@ -151,6 +153,27 @@ st.markdown(
         font-size: 25px;
         font-weight: 700;
         margin-top: 3px;
+    }
+
+    .classification-card {
+        background: rgba(18, 24, 39, 0.92);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 18px;
+        text-align: center;
+        min-height: 130px;
+    }
+
+    .classification-letter {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .classification-text {
+        color: #a9b1c2;
+        font-size: 13px;
+        line-height: 1.4;
     }
 
     .footer {
@@ -290,12 +313,15 @@ st.markdown(
 st.markdown(
     """
     <div class="current-flare">
+
         <div class="current-label">
             CURRENT OBSERVED FLARE
         </div>
+
         <div class="current-value">
             NONE
         </div>
+
     </div>
     """,
     unsafe_allow_html=True
@@ -340,7 +366,7 @@ with p1:
     )
 
 
-# ---------------- PREDICTION DESCRIPTION ----------------
+# ---------------- SIMPLE DESCRIPTION ----------------
 
 with p2:
 
@@ -348,27 +374,136 @@ with p2:
         """
         <div class="card">
 
-            <h3>Forecasting Approach</h3>
+            <h3>Forecasting System</h3>
 
             <p>
-            Solar observations and recent flare activity are used
-            as inputs for forecasting future solar flare activity.
+            Solar observations and recent flare activity
+            are monitored to support next 24-hour flare forecasting.
             </p>
 
             <p>
-            <b>Observation Data</b>
-            → Feature Extraction
-            → Temporal Analysis
-            → Flare Forecast
+            <b>Input:</b> Solar observations + recent flare activity
             </p>
 
-            <p style="text-align:center; font-size:20px;">
-            ↓
+            <p>
+            <b>Output:</b> Predicted flare class for the next 24 hours
             </p>
 
-            <p style="text-align:center;">
-            <b>Next 24-Hour Flare Risk</b>
-            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# ============================================================
+# FLARE CLASSIFICATION
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">☀️ Flare Classification</div>',
+    unsafe_allow_html=True
+)
+
+st.caption(
+    "Solar X-ray flares are classified into five classes based on peak X-ray intensity."
+)
+
+f1, f2, f3, f4, f5 = st.columns(5)
+
+
+with f1:
+
+    st.markdown(
+        """
+        <div class="classification-card">
+
+            <div class="classification-letter">
+                A
+            </div>
+
+            <div class="classification-text">
+                Lowest X-ray flare class
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with f2:
+
+    st.markdown(
+        """
+        <div class="classification-card">
+
+            <div class="classification-letter">
+                B
+            </div>
+
+            <div class="classification-text">
+                Low-level flare activity
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with f3:
+
+    st.markdown(
+        """
+        <div class="classification-card">
+
+            <div class="classification-letter">
+                C
+            </div>
+
+            <div class="classification-text">
+                Moderate flare activity
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with f4:
+
+    st.markdown(
+        """
+        <div class="classification-card">
+
+            <div class="classification-letter">
+                M
+            </div>
+
+            <div class="classification-text">
+                Strong flare activity
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with f5:
+
+    st.markdown(
+        """
+        <div class="classification-card">
+
+            <div class="classification-letter">
+                X
+            </div>
+
+            <div class="classification-text">
+                Highest flare class
+            </div>
 
         </div>
         """,
@@ -421,8 +556,6 @@ try:
             flare_df["max_time"]
             .dt.tz_convert(IST)
         )
-
-        # newest first
 
         flare_df = flare_df.sort_values(
             "max_time",
@@ -486,6 +619,10 @@ try:
             unsafe_allow_html=True
         )
 
+
+        # ----------------------------------------------------
+        # CONVERT FLARE CLASS TO NUMERIC ACTIVITY LEVEL
+        # ----------------------------------------------------
 
         def flare_level(flare_class):
 
