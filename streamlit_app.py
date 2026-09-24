@@ -200,7 +200,7 @@ with c1:
 with c2:
     st.metric(
         "Forecast Horizon",
-        "NEXT 24 HOURS"
+        "Early Warning of Solar Flares"
     )
 
 with c3:
