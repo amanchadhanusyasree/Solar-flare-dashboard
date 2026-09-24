@@ -200,9 +200,10 @@ with c1:
 with c2:
     st.metric(
         "Forecast Horizon",
-        "Early Warning of Solar 
-        Flares"
+        "24-HR AHEAD"
     )
+
+st.caption("Early Warning of Solar Flare Activity")
 
 with c3:
     st.metric(
