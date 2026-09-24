@@ -1,286 +1,565 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import requests
+from datetime import datetime, timezone
 
-# ---------------- PAGE CONFIG ----------------
+# ============================================================
+# PAGE CONFIG
+# ============================================================
+
 st.set_page_config(
-    page_title="Solar Flare Forecasting System",
+    page_title="Solar Flare Forecasting",
     page_icon="☀️",
     layout="wide"
 )
 
-# ---------------- CUSTOM CSS ----------------
+# ============================================================
+# CUSTOM STYLE
+# ============================================================
+
 st.markdown("""
 <style>
-    .main {
-        background-color: #0b1020;
-    }
 
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }
+.stApp {
+    background:
+        radial-gradient(circle at 85% 10%, rgba(255,110,20,0.12), transparent 28%),
+        radial-gradient(circle at 15% 85%, rgba(255,70,10,0.07), transparent 30%),
+        linear-gradient(135deg, #050812 0%, #0a0f1c 50%, #080b14 100%);
+    color: #f5f5f5;
+}
 
-    .title {
-        font-size: 38px;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
+/* Subtle solar glow */
+.stApp::before {
+    content: "";
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    right: -170px;
+    top: 80px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(255,120,25,0.13),
+        rgba(255,70,10,0.04) 45%,
+        transparent 70%
+    );
+    pointer-events: none;
+}
 
-    .subtitle {
-        color: #9ca3af;
-        font-size: 17px;
-        margin-bottom: 25px;
-    }
+/* Main title */
+.main-title {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0;
+}
 
-    .card {
-        background-color: #151c2f;
-        padding: 22px;
-        border-radius: 14px;
-        border: 1px solid #26304a;
-        margin-bottom: 18px;
-    }
+.subtitle {
+    color: #a9b1c2;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 28px;
+}
 
-    .prediction {
-        background-color: #1d2438;
-        padding: 30px;
-        border-radius: 16px;
-        border: 1px solid #39445f;
-        text-align: center;
-    }
+/* Section headings */
+.section-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
 
-    .prediction-class {
-        font-size: 46px;
-        font-weight: 800;
-        margin: 10px 0;
-    }
+/* Cards */
+.card {
+    background: rgba(18, 24, 39, 0.88);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 22px;
+    min-height: 150px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.22);
+}
 
-    .small-text {
-        color: #9ca3af;
-        font-size: 14px;
-    }
+/* Observation placeholders */
+.observation-box {
+    height: 260px;
+    border-radius: 14px;
+    border: 1px dashed rgba(255,255,255,0.18);
+    background:
+        radial-gradient(circle at 50% 50%,
+        rgba(255,100,20,0.10),
+        transparent 45%),
+        #0c1220;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #9da6b8;
+}
 
-    .pipeline {
-        text-align: center;
-        font-size: 18px;
-        font-weight: 600;
-        padding: 20px;
-        background-color: #151c2f;
-        border-radius: 14px;
-        border: 1px solid #26304a;
-    }
+/* Prediction */
+.prediction-card {
+    background:
+        radial-gradient(circle at 50% 0%,
+        rgba(255,100,20,0.18),
+        transparent 50%),
+        #111827;
+    border: 1px solid rgba(255,120,30,0.25);
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+}
+
+.prediction-label {
+    color: #9da6b8;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.prediction-value {
+    font-size: 55px;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.prediction-note {
+    color: #9da6b8;
+    font-size: 13px;
+}
+
+/* Flare scale */
+.scale-box {
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.scale-item {
+    padding: 10px 14px;
+    margin: 7px 0;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.04);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: #70798b;
+    font-size: 12px;
+    margin-top: 30px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 
-# ---------------- HEADER ----------------
+# ============================================================
+# HEADER
+# ============================================================
+
 st.markdown(
-    '<div class="title">☀️ Solar Flare Forecasting System</div>',
+    '<div class="main-title">☀️ Solar Flare Forecasting</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
     '<div class="subtitle">'
-    'Multimodal Deep Learning for Solar Flare Classification and Forecasting'
+    'Solar observation, flare activity and deep-learning based forecasting'
     '</div>',
     unsafe_allow_html=True
 )
 
-# ---------------- STATUS ----------------
-status1, status2, status3 = st.columns(3)
 
-with status1:
-    st.metric("System Status", "● ONLINE")
+# ============================================================
+# TOP STATUS
+# ============================================================
 
-with status2:
-    st.metric("Observation Mode", "HMI + AIA")
+c1, c2, c3 = st.columns(3)
 
-with status3:
-    st.metric("Forecast Window", "24 Hours")
+with c1:
+    st.metric("Monitoring", "SOLAR ACTIVITY")
+
+with c2:
+    st.metric("Forecast Window", "24 HOURS")
+
+with c3:
+    current_time = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M UTC")
+    st.metric("Dashboard Time", current_time)
 
 
-# ---------------- SOLAR OBSERVATIONS ----------------
-st.markdown("## 🔭 Solar Observations")
+# ============================================================
+# SOLAR OBSERVATIONS
+# ============================================================
 
-col1, col2 = st.columns(2)
+st.markdown(
+    '<div class="section-title">🔭 Solar Observations</div>',
+    unsafe_allow_html=True
+)
 
-with col1:
+obs1, obs2 = st.columns(2)
+
+with obs1:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("HMI Magnetogram")
 
-    st.info(
-        "HMI magnetogram image will appear here when the real solar "
-        "observation data is connected."
-    )
+    st.markdown("""
+    <div class="observation-box">
+        <div>
+            <b>HMI observation</b><br>
+            Connect HMI magnetogram data here
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.caption("Input → Solar magnetic-field information")
+    st.caption("Magnetic-field observation")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-with col2:
+with obs2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("AIA UV Observation")
 
-    st.info(
-        "AIA UV image will appear here when the real solar "
-        "observation data is connected."
-    )
-
-    st.caption("Input → Ultraviolet solar observation")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ---------------- MODEL PIPELINE ----------------
-st.markdown("## 🧠 Multimodal Deep Learning Pipeline")
-
-st.markdown("""
-<div class="pipeline">
-
-HMI Magnetogram → <b>Magnetogram CNN</b>
-&nbsp;&nbsp; + &nbsp;&nbsp;
-AIA UV Image → <b>UV CNN</b>
-
-<br><br>
-
-↓
-
-<br><br>
-
-<b>Multimodal Feature Fusion</b>
-
-<br><br>
-
-↓
-
-<br><br>
-
-<b>Attention-Based Spatial-Temporal Model</b>
-
-<br><br>
-
-↓
-
-<br><br>
-
-🔥 <b>A / B / C / M / X Flare Prediction</b>
-
-</div>
-""", unsafe_allow_html=True)
-
-
-# ---------------- PREDICTION ----------------
-st.markdown("## 🔥 Flare Prediction")
-
-pred_col1, pred_col2 = st.columns([1, 2])
-
-with pred_col1:
     st.markdown("""
-    <div class="prediction">
-        <div class="small-text">PREDICTED FLARE CLASS</div>
-        <div class="prediction-class">M</div>
-        <div class="small-text">DEMO OUTPUT — MODEL NOT CONNECTED</div>
+    <div class="observation-box">
+        <div>
+            <b>AIA UV observation</b><br>
+            Connect AIA UV data here
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-with pred_col2:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-
-    st.subheader("Flare Classes")
-
-    flare_data = pd.DataFrame({
-        "Class": ["A", "B", "C", "M", "X"],
-        "Status": [
-            "Possible",
-            "Possible",
-            "Possible",
-            "Possible",
-            "Possible"
-        ]
-    })
-
-    st.dataframe(
-        flare_data,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.caption(
-        "The final prediction will be generated by the trained "
-        "multimodal deep-learning model."
-    )
+    st.caption("Ultraviolet solar observation")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ---------------- TEMPORAL ANALYSIS ----------------
-st.markdown("## 📈 Temporal Solar Activity")
+# ============================================================
+# PREDICTION
+# ============================================================
 
-demo_activity = pd.DataFrame({
-    "Time Step": range(1, 11),
-    "Relative Activity": [
-        0.32, 0.38, 0.41, 0.46, 0.53,
-        0.58, 0.62, 0.69, 0.74, 0.81
-    ]
-})
-
-st.line_chart(
-    demo_activity.set_index("Time Step")
+st.markdown(
+    '<div class="section-title">🔥 Flare Prediction</div>',
+    unsafe_allow_html=True
 )
 
-st.caption(
-    "Demo visualization — will be replaced by temporal solar "
-    "observation/model data."
+p1, p2 = st.columns([1, 1.6])
+
+with p1:
+
+    st.markdown("""
+    <div class="prediction-card">
+
+        <div class="prediction-label">
+            MODEL PREDICTION
+        </div>
+
+        <div class="prediction-value">
+            —
+        </div>
+
+        <div class="prediction-note">
+            Waiting for trained model
+        </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+with p2:
+
+    st.markdown("""
+    <div class="scale-box">
+
+    <h4>Solar Flare Classes</h4>
+
+    <div class="scale-item">
+    <b>A</b> — Lowest X-ray flare class
+    </div>
+
+    <div class="scale-item">
+    <b>B</b> — Low-level flare activity
+    </div>
+
+    <div class="scale-item">
+    <b>C</b> — Moderate flare activity
+    </div>
+
+    <div class="scale-item">
+    <b>M</b> — Strong flare activity
+    </div>
+
+    <div class="scale-item">
+    <b>X</b> — Highest flare class
+    </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ============================================================
+# REAL RECENT SOLAR FLARES
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">🚨 Recent Solar Flares</div>',
+    unsafe_allow_html=True
 )
 
+# NOAA/SWPC GOES flare feed
+NOAA_URL = (
+    "https://services.swpc.noaa.gov/json/"
+    "goes/secondary/xray-flares-7-day.json"
+)
 
-# ---------------- PERFORMANCE ----------------
-st.markdown("## 📊 Model Evaluation")
+try:
 
-m1, m2, m3, m4 = st.columns(4)
+    response = requests.get(NOAA_URL, timeout=10)
+    response.raise_for_status()
 
-with m1:
-    st.metric("Accuracy", "—")
+    flare_data = response.json()
 
-with m2:
-    st.metric("Precision", "—")
+    if flare_data:
 
-with m3:
-    st.metric("Recall", "—")
+        df = pd.DataFrame(flare_data)
 
-with m4:
-    st.metric("F1 Score", "—")
+        # ----------------------------------------------------
+        # Identify useful columns safely
+        # ----------------------------------------------------
+
+        possible_class_columns = [
+            "max_class",
+            "max_class_xray",
+            "class",
+            "event_class"
+        ]
+
+        class_column = None
+
+        for col in possible_class_columns:
+            if col in df.columns:
+                class_column = col
+                break
+
+        # ----------------------------------------------------
+        # Convert time column
+        # ----------------------------------------------------
+
+        time_columns = [
+            "max_time",
+            "begin_time",
+            "start_time",
+            "event_time"
+        ]
+
+        time_column = None
+
+        for col in time_columns:
+            if col in df.columns:
+                time_column = col
+                break
+
+        if time_column:
+            df["Time"] = pd.to_datetime(
+                df[time_column],
+                errors="coerce",
+                utc=True
+            )
+
+        # ----------------------------------------------------
+        # Keep only classified flares
+        # ----------------------------------------------------
+
+        if class_column:
+
+            df["Flare Class"] = (
+                df[class_column]
+                .astype(str)
+                .str.upper()
+            )
+
+            # Keep A/B/C/M/X classifications
+            df = df[
+                df["Flare Class"].str.match(
+                    r"^[ABCMX][0-9]"
+                )
+            ]
+
+        # ----------------------------------------------------
+        # Sort newest first
+        # ----------------------------------------------------
+
+        if "Time" in df.columns:
+
+            df = df.sort_values(
+                "Time",
+                ascending=False
+            )
+
+        # Show latest 10
+        df = df.head(10)
+
+        # ----------------------------------------------------
+        # Display table
+        # ----------------------------------------------------
+
+        display_columns = []
+
+        if "Time" in df.columns:
+            display_columns.append("Time")
+
+        if "Flare Class" in df.columns:
+            display_columns.append("Flare Class")
+
+        # Region if available
+        for possible_region in [
+            "region",
+            "active_region",
+            "region_number"
+        ]:
+            if possible_region in df.columns:
+                df["Active Region"] = df[possible_region]
+                display_columns.append("Active Region")
+                break
+
+        if display_columns:
+
+            display_df = df[display_columns].copy()
+
+            if "Time" in display_df.columns:
+                display_df["Time"] = display_df["Time"].dt.strftime(
+                    "%d %b %Y  %H:%M UTC"
+                )
+
+            st.dataframe(
+                display_df,
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+            st.info(
+                "NOAA returned flare data, but the current "
+                "field structure could not be displayed."
+            )
+
+    else:
+
+        st.info("No recent classified flare events returned.")
+
+except Exception as e:
+
+    st.warning(
+        "Live NOAA flare data could not be loaded right now."
+    )
+
+    st.caption(
+        "The dashboard will continue to work. "
+        "Check the NOAA data connection later."
+    )
 
 
-# ---------------- INTERPRETATION ----------------
-st.markdown("## 🔬 Case Study & Interpretation")
+# ============================================================
+# FLARE ACTIVITY
+# ============================================================
 
-st.markdown("""
-<div class="card">
+st.markdown(
+    '<div class="section-title">📈 Recent Flare Activity</div>',
+    unsafe_allow_html=True
+)
 
-<b>Selected Solar Event</b>
+try:
 
-<br><br>
+    if "df" in locals() and "Time" in df.columns:
 
-HMI and AIA observations → modality-specific feature extraction
-→ multimodal fusion → spatial-temporal analysis
-→ flare-class prediction.
+        graph_df = df.dropna(subset=["Time"]).copy()
 
-<br><br>
+        if "Flare Class" in graph_df.columns:
 
-The case-study section will be connected to real historical
-solar observations after the model and dataset are integrated.
+            # Convert A/B/C/M/X class to approximate numeric level
+            # for visualization only.
+            def flare_level(value):
 
-</div>
-""", unsafe_allow_html=True)
+                try:
+                    letter = value[0]
+                    number = float(value[1:])
+
+                    base = {
+                        "A": 0,
+                        "B": 1,
+                        "C": 2,
+                        "M": 3,
+                        "X": 4
+                    }
+
+                    return base.get(letter, 0) + number / 10
+
+                except:
+                    return None
+
+            graph_df["Activity Level"] = (
+                graph_df["Flare Class"]
+                .apply(flare_level)
+            )
+
+            graph_df = graph_df.dropna(
+                subset=["Activity Level"]
+            )
+
+            graph_df = graph_df.sort_values("Time")
+
+            if not graph_df.empty:
+
+                chart_df = graph_df[
+                    ["Time", "Activity Level"]
+                ].set_index("Time")
+
+                st.line_chart(
+                    chart_df,
+                    use_container_width=True
+                )
+
+                st.caption(
+                    "Activity level is derived from the observed "
+                    "GOES flare classification for visualization."
+                )
+
+            else:
+                st.info("Not enough classified events for the graph.")
+
+        else:
+            st.info("Flare classification data unavailable.")
+
+    else:
+        st.info("Waiting for live flare data.")
+
+except Exception:
+
+    st.info(
+        "The activity graph will appear when valid flare "
+        "classification data is available."
+    )
 
 
-# ---------------- FOOTER ----------------
+# ============================================================
+# DATA SOURCE
+# ============================================================
+
 st.markdown("---")
 
-st.caption(
-    "Solar Flare Forecasting System | Multimodal Deep Learning Prototype"
+st.markdown(
+    '<div class="footer">'
+    'Recent flare events: NOAA / Space Weather Prediction Center '
+    'GOES X-ray observations'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="footer">'
+    'Solar Flare Forecasting System — Software Prototype'
+    '</div>',
+    unsafe_allow_html=True
 )
