@@ -14,6 +14,20 @@ st.set_page_config(
 )
 
 # ============================================================
+# REAL SDO IMAGE SOURCES
+# ============================================================
+
+# NASA SDO near-real-time browse images
+HMI_IMAGE = "https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_HMIIF.jpg"
+AIA_IMAGE = "https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg"
+
+# NOAA GOES flare data
+NOAA_URL = (
+    "https://services.swpc.noaa.gov/json/"
+    "goes/primary/xray-flares-7-day.json"
+)
+
+# ============================================================
 # CUSTOM STYLE
 # ============================================================
 
@@ -28,7 +42,6 @@ st.markdown("""
     color: #f5f5f5;
 }
 
-/* Subtle solar glow */
 .stApp::before {
     content: "";
     position: fixed;
@@ -46,7 +59,6 @@ st.markdown("""
     pointer-events: none;
 }
 
-/* Main title */
 .main-title {
     font-size: 42px;
     font-weight: 800;
@@ -61,7 +73,6 @@ st.markdown("""
     margin-bottom: 28px;
 }
 
-/* Section headings */
 .section-title {
     font-size: 24px;
     font-weight: 700;
@@ -69,34 +80,21 @@ st.markdown("""
     margin-bottom: 15px;
 }
 
-/* Cards */
 .card {
     background: rgba(18, 24, 39, 0.88);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px;
     padding: 22px;
-    min-height: 150px;
+    margin-bottom: 10px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.22);
 }
 
-/* Observation placeholders */
-.observation-box {
-    height: 260px;
-    border-radius: 14px;
-    border: 1px dashed rgba(255,255,255,0.18);
-    background:
-        radial-gradient(circle at 50% 50%,
-        rgba(255,100,20,0.10),
-        transparent 45%),
-        #0c1220;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #9da6b8;
+.image-label {
+    color: #a9b1c2;
+    font-size: 13px;
+    margin-top: 8px;
 }
 
-/* Prediction */
 .prediction-card {
     background:
         radial-gradient(circle at 50% 0%,
@@ -126,7 +124,6 @@ st.markdown("""
     font-size: 13px;
 }
 
-/* Flare scale */
 .scale-box {
     background: #111827;
     border: 1px solid rgba(255,255,255,0.08);
@@ -141,7 +138,6 @@ st.markdown("""
     background: rgba(255,255,255,0.04);
 }
 
-/* Footer */
 .footer {
     text-align: center;
     color: #70798b;
@@ -180,11 +176,13 @@ with c1:
     st.metric("Monitoring", "SOLAR ACTIVITY")
 
 with c2:
-    st.metric("Forecast Window", "24 HOURS")
+    st.metric("Forecast Horizon", "NEXT 24 HOURS")
 
 with c3:
-    current_time = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M UTC")
-    st.metric("Dashboard Time", current_time)
+    current_time = datetime.now(timezone.utc).strftime(
+        "%d %b %Y, %H:%M UTC"
+    )
+    st.metric("Updated", current_time)
 
 
 # ============================================================
@@ -198,40 +196,58 @@ st.markdown(
 
 obs1, obs2 = st.columns(2)
 
+# ---------------- HMI ----------------
+
 with obs1:
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("HMI Magnetogram")
 
-    st.markdown("""
-    <div class="observation-box">
-        <div>
-            <b>HMI observation</b><br>
-            Connect HMI magnetogram data here
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    try:
+        st.image(
+            HMI_IMAGE,
+            use_container_width=True,
+            caption="NASA SDO / HMI — Line-of-Sight Magnetogram"
+        )
 
-    st.caption("Magnetic-field observation")
+        st.markdown(
+            '<div class="image-label">'
+            'Real solar magnetic-field observation'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+    except Exception:
+        st.error("HMI image could not be loaded.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 
+# ---------------- AIA ----------------
+
 with obs2:
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     st.subheader("AIA UV Observation")
 
-    st.markdown("""
-    <div class="observation-box">
-        <div>
-            <b>AIA UV observation</b><br>
-            Connect AIA UV data here
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    try:
+        st.image(
+            AIA_IMAGE,
+            use_container_width=True,
+            caption="NASA SDO / AIA — 171 Å"
+        )
 
-    st.caption("Ultraviolet solar observation")
+        st.markdown(
+            '<div class="image-label">'
+            'Real ultraviolet solar observation'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+    except Exception:
+        st.error("AIA image could not be loaded.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -308,15 +324,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# NOAA/SWPC GOES flare feed
-NOAA_URL = (
-    "https://services.swpc.noaa.gov/json/"
-    "goes/secondary/xray-flares-7-day.json"
-)
-
 try:
 
-    response = requests.get(NOAA_URL, timeout=10)
+    response = requests.get(
+        NOAA_URL,
+        timeout=10
+    )
+
     response.raise_for_status()
 
     flare_data = response.json()
@@ -325,52 +339,39 @@ try:
 
         df = pd.DataFrame(flare_data)
 
-        # ----------------------------------------------------
-        # Identify useful columns safely
-        # ----------------------------------------------------
+        # Find flare classification column
+        class_column = None
 
-        possible_class_columns = [
+        for col in [
             "max_class",
             "max_class_xray",
             "class",
             "event_class"
-        ]
-
-        class_column = None
-
-        for col in possible_class_columns:
+        ]:
             if col in df.columns:
                 class_column = col
                 break
 
-        # ----------------------------------------------------
-        # Convert time column
-        # ----------------------------------------------------
+        # Find event time
+        time_column = None
 
-        time_columns = [
+        for col in [
             "max_time",
             "begin_time",
             "start_time",
             "event_time"
-        ]
-
-        time_column = None
-
-        for col in time_columns:
+        ]:
             if col in df.columns:
                 time_column = col
                 break
 
         if time_column:
+
             df["Time"] = pd.to_datetime(
                 df[time_column],
                 errors="coerce",
                 utc=True
             )
-
-        # ----------------------------------------------------
-        # Keep only classified flares
-        # ----------------------------------------------------
 
         if class_column:
 
@@ -380,30 +381,19 @@ try:
                 .str.upper()
             )
 
-            # Keep A/B/C/M/X classifications
             df = df[
                 df["Flare Class"].str.match(
                     r"^[ABCMX][0-9]"
                 )
             ]
 
-        # ----------------------------------------------------
-        # Sort newest first
-        # ----------------------------------------------------
-
         if "Time" in df.columns:
-
             df = df.sort_values(
                 "Time",
                 ascending=False
             )
 
-        # Show latest 10
         df = df.head(10)
-
-        # ----------------------------------------------------
-        # Display table
-        # ----------------------------------------------------
 
         display_columns = []
 
@@ -413,24 +403,38 @@ try:
         if "Flare Class" in df.columns:
             display_columns.append("Flare Class")
 
-        # Region if available
-        for possible_region in [
+        # Active region if available
+        for region_column in [
             "region",
             "active_region",
             "region_number"
         ]:
-            if possible_region in df.columns:
-                df["Active Region"] = df[possible_region]
-                display_columns.append("Active Region")
+
+            if region_column in df.columns:
+
+                df["Active Region"] = df[
+                    region_column
+                ]
+
+                display_columns.append(
+                    "Active Region"
+                )
+
                 break
 
         if display_columns:
 
-            display_df = df[display_columns].copy()
+            display_df = df[
+                display_columns
+            ].copy()
 
             if "Time" in display_df.columns:
-                display_df["Time"] = display_df["Time"].dt.strftime(
-                    "%d %b %Y  %H:%M UTC"
+
+                display_df["Time"] = (
+                    display_df["Time"]
+                    .dt.strftime(
+                        "%d %b %Y  %H:%M UTC"
+                    )
                 )
 
             st.dataframe(
@@ -440,29 +444,27 @@ try:
             )
 
         else:
+
             st.info(
-                "NOAA returned flare data, but the current "
-                "field structure could not be displayed."
+                "NOAA returned data, but the "
+                "current format could not be displayed."
             )
 
     else:
 
-        st.info("No recent classified flare events returned.")
+        st.info(
+            "No recent classified flare events returned."
+        )
 
-except Exception as e:
+except Exception:
 
     st.warning(
         "Live NOAA flare data could not be loaded right now."
     )
 
-    st.caption(
-        "The dashboard will continue to work. "
-        "Check the NOAA data connection later."
-    )
-
 
 # ============================================================
-# FLARE ACTIVITY
+# RECENT FLARE ACTIVITY
 # ============================================================
 
 st.markdown(
@@ -472,74 +474,79 @@ st.markdown(
 
 try:
 
-    if "df" in locals() and "Time" in df.columns:
+    if (
+        "df" in locals()
+        and "Time" in df.columns
+        and "Flare Class" in df.columns
+    ):
 
-        graph_df = df.dropna(subset=["Time"]).copy()
+        graph_df = df.dropna(
+            subset=["Time"]
+        ).copy()
 
-        if "Flare Class" in graph_df.columns:
+        def flare_level(value):
 
-            # Convert A/B/C/M/X class to approximate numeric level
-            # for visualization only.
-            def flare_level(value):
+            try:
 
-                try:
-                    letter = value[0]
-                    number = float(value[1:])
-
-                    base = {
-                        "A": 0,
-                        "B": 1,
-                        "C": 2,
-                        "M": 3,
-                        "X": 4
-                    }
-
-                    return base.get(letter, 0) + number / 10
-
-                except:
-                    return None
-
-            graph_df["Activity Level"] = (
-                graph_df["Flare Class"]
-                .apply(flare_level)
-            )
-
-            graph_df = graph_df.dropna(
-                subset=["Activity Level"]
-            )
-
-            graph_df = graph_df.sort_values("Time")
-
-            if not graph_df.empty:
-
-                chart_df = graph_df[
-                    ["Time", "Activity Level"]
-                ].set_index("Time")
-
-                st.line_chart(
-                    chart_df,
-                    use_container_width=True
+                letter = value[0]
+                number = float(
+                    value[1:]
                 )
 
-                st.caption(
-                    "Activity level is derived from the observed "
-                    "GOES flare classification for visualization."
+                base = {
+                    "A": 0,
+                    "B": 1,
+                    "C": 2,
+                    "M": 3,
+                    "X": 4
+                }
+
+                return (
+                    base.get(letter, 0)
+                    + number / 10
                 )
 
-            else:
-                st.info("Not enough classified events for the graph.")
+            except:
+
+                return None
+
+        graph_df[
+            "Activity Level"
+        ] = graph_df[
+            "Flare Class"
+        ].apply(flare_level)
+
+        graph_df = graph_df.dropna(
+            subset=["Activity Level"]
+        )
+
+        graph_df = graph_df.sort_values(
+            "Time"
+        )
+
+        if not graph_df.empty:
+
+            chart_df = graph_df[
+                ["Time", "Activity Level"]
+            ].set_index("Time")
+
+            st.line_chart(
+                chart_df,
+                use_container_width=True
+            )
 
         else:
-            st.info("Flare classification data unavailable.")
 
-    else:
-        st.info("Waiting for live flare data.")
+            st.info(
+                "Not enough classified events "
+                "for the activity graph."
+            )
 
 except Exception:
 
     st.info(
-        "The activity graph will appear when valid flare "
-        "classification data is available."
+        "Activity graph will appear when "
+        "valid flare data is available."
     )
 
 
@@ -551,8 +558,15 @@ st.markdown("---")
 
 st.markdown(
     '<div class="footer">'
-    'Recent flare events: NOAA / Space Weather Prediction Center '
-    'GOES X-ray observations'
+    'Solar observations: NASA Solar Dynamics Observatory '
+    '(SDO/HMI and SDO/AIA)'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="footer">'
+    'Recent flare events: NOAA / SWPC GOES X-ray observations'
     '</div>',
     unsafe_allow_html=True
 )
