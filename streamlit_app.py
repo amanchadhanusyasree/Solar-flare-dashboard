@@ -27,7 +27,6 @@ NOAA_FLARE_URL = (
     "goes/primary/xray-flares-7-day.json"
 )
 
-# NASA SDO latest images
 HMI_IMAGE = (
     "https://sdo.gsfc.nasa.gov/assets/img/latest/"
     "latest_1024_HMIIF.jpg"
@@ -112,18 +111,18 @@ st.markdown("""
         #111827;
     border: 1px solid rgba(255,120,30,0.25);
     border-radius: 18px;
-    padding: 28px;
+    padding: 22px;
     text-align: center;
 }
 
 .prediction-label {
     color: #9da6b8;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 1px;
 }
 
 .prediction-value {
-    font-size: 52px;
+    font-size: 38px;
     font-weight: 800;
     margin: 8px 0;
 }
@@ -133,18 +132,22 @@ st.markdown("""
     font-size: 13px;
 }
 
-.scale-box {
+.flare-class-card {
     background: #111827;
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 9px;
 }
 
-.scale-item {
-    padding: 10px 14px;
-    margin: 7px 0;
-    border-radius: 9px;
-    background: rgba(255,255,255,0.04);
+.flare-class-name {
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.flare-class-description {
+    color: #9da6b8;
+    font-size: 12px;
 }
 
 .eval-box {
@@ -223,6 +226,56 @@ with c3:
 
 
 # ============================================================
+# LOAD REAL NOAA FLARE DATA
+# ============================================================
+
+@st.cache_data(ttl=300)
+def load_flare_data():
+
+    response = requests.get(
+        NOAA_FLARE_URL,
+        timeout=20
+    )
+
+    response.raise_for_status()
+
+    data = response.json()
+
+    return pd.DataFrame(data)
+
+
+flare_df = pd.DataFrame()
+noaa_available = False
+
+try:
+
+    flare_df = load_flare_data()
+
+    if not flare_df.empty:
+
+        flare_df["max_time"] = pd.to_datetime(
+            flare_df["max_time"],
+            errors="coerce",
+            utc=True
+        )
+
+        flare_df["max_time_ist"] = (
+            flare_df["max_time"]
+            .dt.tz_convert(IST)
+        )
+
+        flare_df = flare_df.sort_values(
+            "max_time",
+            ascending=False
+        )
+
+        noaa_available = True
+
+except Exception:
+    noaa_available = False
+
+
+# ============================================================
 # SOLAR OBSERVATIONS
 # ============================================================
 
@@ -291,79 +344,186 @@ with obs2:
 # ============================================================
 # FLARE PREDICTION
 # ============================================================
-# ============================================================
-# FLARE PREDICTION — OUR SIH MODEL
-# ============================================================
 
 st.markdown(
     '<div class="section-title">🔥 Flare Prediction</div>',
     unsafe_allow_html=True
 )
 
-p1, p2 = st.columns([1, 1.7])
 
-# ---------------- MODEL OUTPUT ----------------
+# ============================================================
+# ALL 5 FLARE CLASSES
+# ============================================================
 
-with p1:
+st.subheader("Next 24-Hour Flare Classification")
 
-    st.markdown("""
-    <div class="prediction-card">
+st.caption(
+    "The trained forecasting model will provide the class "
+    "probabilities after model integration."
+)
 
-        <div class="prediction-label">
-            NEXT 24-HOUR M/X FLARE RISK
-        </div>
+flare_classes = [
+    ("A", "Lowest X-ray flare level"),
+    ("B", "Low-level flare activity"),
+    ("C", "Moderate flare activity"),
+    ("M", "Strong flare activity"),
+    ("X", "Highest flare activity")
+]
 
-        <div class="prediction-value">
-            —
-        </div>
+class_cols = st.columns(5)
 
-        <div class="prediction-note">
-            Awaiting trained model inference
-        </div>
+for col, (flare_class, description) in zip(
+    class_cols,
+    flare_classes
+):
 
-    </div>
-    """, unsafe_allow_html=True)
+    with col:
+
+        st.markdown(
+            f"""
+            <div class="flare-class-card">
+                <div class="flare-class-name">
+                    {flare_class}
+                </div>
+                <div class="flare-class-description">
+                    {description}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.metric(
+            label="Model output",
+            value="Pending"
+        )
 
 
-# ---------------- MODEL PIPELINE ----------------
+# ============================================================
+# CURRENT / RECENT REAL FLARES
+# ============================================================
 
-with p2:
+st.markdown(
+    '<div class="section-title">'
+    '🚨 Current & Recent Solar Flares'
+    '</div>',
+    unsafe_allow_html=True
+)
 
-    st.markdown("""
-    <div class="card">
+if noaa_available:
 
-        <h3>Multimodal Forecasting Pipeline</h3>
+    current_flares = flare_df.head(8).copy()
 
-        <p>
-        <b>HMI Magnetogram Sequences</b>
-        → CNN
-        → Spatial Magnetic Features
-        </p>
+    current_table = pd.DataFrame({
 
-        <p>
-        <b>20 SHARP Features</b>
-        +
-        <b>3 Recent Flare-History Features</b>
-        </p>
+        "Time (IST)": current_flares[
+            "max_time_ist"
+        ].dt.strftime(
+            "%d %b %Y  %I:%M %p"
+        ),
 
-        <p style="font-size:22px; text-align:center;">
-        ↓
-        </p>
+        "Flare Class": current_flares[
+            "max_class"
+        ].astype(str),
 
-        <p style="text-align:center;">
-        <b>Feature Fusion → LSTM</b>
-        </p>
+        "Satellite": (
+            "GOES-"
+            + current_flares[
+                "satellite"
+            ].astype(str)
+        )
+    })
 
-        <p style="font-size:22px; text-align:center;">
-        ↓
-        </p>
+    st.dataframe(
+        current_table,
+        use_container_width=True,
+        hide_index=True
+    )
 
-        <p style="text-align:center;">
-        <b>Next 24-Hour M/X Flare Risk</b>
-        </p>
+    st.caption(
+        "Real observed GOES flare events from NOAA/SWPC. "
+        "All times are displayed in IST."
+    )
 
-    </div>
-    """, unsafe_allow_html=True)
+else:
+
+    st.warning(
+        "Live NOAA flare data could not be loaded right now."
+    )
+
+
+# ============================================================
+# FORECAST STATUS
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">'
+    '🎯 Forecast Status'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+status_col1, status_col2 = st.columns(2)
+
+with status_col1:
+
+    st.markdown(
+        '<div class="prediction-card">',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="prediction-label">'
+        'NEXT 24-HOUR FORECAST'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="prediction-value">'
+        'MODEL PENDING'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="prediction-note">'
+        'Waiting for trained model inference'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+with status_col2:
+
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
+
+    st.subheader("Forecast Target")
+
+    st.write(
+        "Estimate the likelihood of A, B, C, M and X-class "
+        "solar flare activity during the next 24 hours."
+    )
+
+    st.write(
+        "Current observed flare activity is obtained from "
+        "NOAA GOES X-ray observations."
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
 # ============================================================
 # MODEL EVALUATION
 # ============================================================
@@ -376,36 +536,52 @@ st.markdown(
 e1, e2, e3, e4 = st.columns(4)
 
 with e1:
-    st.markdown("""
-    <div class="eval-box">
-        <div class="eval-number">—</div>
-        <div class="eval-label">TSS</div>
-    </div>
-    """, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="eval-box">
+            <div class="eval-number">—</div>
+            <div class="eval-label">TSS</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 with e2:
-    st.markdown("""
-    <div class="eval-box">
-        <div class="eval-number">—</div>
-        <div class="eval-label">Accuracy</div>
-    </div>
-    """, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="eval-box">
+            <div class="eval-number">—</div>
+            <div class="eval-label">Accuracy</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 with e3:
-    st.markdown("""
-    <div class="eval-box">
-        <div class="eval-number">—</div>
-        <div class="eval-label">Precision</div>
-    </div>
-    """, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="eval-box">
+            <div class="eval-number">—</div>
+            <div class="eval-label">Precision</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 with e4:
-    st.markdown("""
-    <div class="eval-box">
-        <div class="eval-number">—</div>
-        <div class="eval-label">Recall</div>
-    </div>
-    """, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="eval-box">
+            <div class="eval-number">—</div>
+            <div class="eval-label">Recall</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 st.caption(
     "Evaluation metrics will be populated after the forecasting "
@@ -414,210 +590,108 @@ st.caption(
 
 
 # ============================================================
-# LOAD REAL NOAA FLARE DATA
+# RECENT FLARE ACTIVITY
 # ============================================================
 
-@st.cache_data(ttl=300)
-def load_flare_data():
+st.markdown(
+    '<div class="section-title">'
+    '📈 Recent Flare Activity'
+    '</div>',
+    unsafe_allow_html=True
+)
 
-    response = requests.get(
-        NOAA_FLARE_URL,
-        timeout=20
+
+def flare_level(flare_class):
+
+    if not isinstance(flare_class, str):
+        return None
+
+    try:
+
+        letter = flare_class[0].upper()
+        number = float(flare_class[1:])
+
+        base = {
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "M": 3,
+            "X": 4
+        }
+
+        if letter not in base:
+            return None
+
+        return base[letter] + number / 10
+
+    except Exception:
+
+        return None
+
+
+if noaa_available:
+
+    graph_df = flare_df.copy()
+
+    graph_df["Activity Level"] = (
+        graph_df["max_class"]
+        .apply(flare_level)
     )
 
-    response.raise_for_status()
+    graph_df = graph_df.dropna(
+        subset=[
+            "max_time",
+            "Activity Level"
+        ]
+    )
 
-    data = response.json()
+    graph_df = graph_df.sort_values(
+        "max_time"
+    )
 
-    return pd.DataFrame(data)
+    if not graph_df.empty:
 
+        chart_data = graph_df[
+            [
+                "max_time",
+                "Activity Level"
+            ]
+        ].copy()
 
-try:
+        chart_data = chart_data.set_index(
+            "max_time"
+        )
 
-    flare_df = load_flare_data()
+        chart_data.index = (
+            chart_data.index
+            .tz_convert(IST)
+        )
 
-    if flare_df.empty:
+        chart_data.columns = [
+            "Flare Activity"
+        ]
 
-        st.warning(
-            "NOAA returned no flare events."
+        st.line_chart(
+            chart_data,
+            use_container_width=True
+        )
+
+        st.caption(
+            "Activity level derived from the observed "
+            "NOAA GOES flare class."
         )
 
     else:
 
-        # ----------------------------------------------------
-        # TIME CONVERSION
-        # NOAA provides UTC timestamps.
-        # Convert ONLY for dashboard display to IST.
-        # ----------------------------------------------------
-
-        flare_df["max_time"] = pd.to_datetime(
-            flare_df["max_time"],
-            errors="coerce",
-            utc=True
+        st.info(
+            "No valid flare activity data available."
         )
 
-        flare_df["max_time_ist"] = (
-            flare_df["max_time"]
-            .dt.tz_convert(IST)
-        )
+else:
 
-        # Sort newest first
-        flare_df = flare_df.sort_values(
-            "max_time",
-            ascending=False
-        )
-
-        # ====================================================
-        # RECENT SOLAR FLARES
-        # ====================================================
-
-        st.markdown(
-            '<div class="section-title">'
-            '🚨 Recent Solar Flares'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        recent_df = flare_df.head(10).copy()
-
-        recent_table = pd.DataFrame({
-
-            "Time (IST)": recent_df[
-                "max_time_ist"
-            ].dt.strftime(
-                "%d %b %Y  %I:%M %p"
-            ),
-
-            "Flare Class": recent_df[
-                "max_class"
-            ].astype(str),
-
-            "Satellite": (
-                "GOES-"
-                + recent_df[
-                    "satellite"
-                ].astype(str)
-            )
-        })
-
-        st.dataframe(
-            recent_table,
-            use_container_width=True,
-            hide_index=True
-        )
-
-        st.caption(
-            "Source: NOAA GOES X-ray flare observations. "
-            "Times displayed in IST."
-        )
-
-
-        # ====================================================
-        # RECENT FLARE ACTIVITY
-        # ====================================================
-
-        st.markdown(
-            '<div class="section-title">'
-            '📈 Recent Flare Activity'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        graph_df = flare_df.copy()
-
-        # Convert flare class to numeric level
-        def flare_level(flare_class):
-
-            if not isinstance(flare_class, str):
-                return None
-
-            try:
-
-                letter = flare_class[0].upper()
-                number = float(flare_class[1:])
-
-                base = {
-                    "A": 0,
-                    "B": 1,
-                    "C": 2,
-                    "M": 3,
-                    "X": 4
-                }
-
-                if letter not in base:
-                    return None
-
-                return base[letter] + number / 10
-
-            except Exception:
-                return None
-
-
-        graph_df["Activity Level"] = (
-            graph_df["max_class"]
-            .apply(flare_level)
-        )
-
-        graph_df = graph_df.dropna(
-            subset=[
-                "max_time",
-                "Activity Level"
-            ]
-        )
-
-        # Last 7 days of NOAA flare records
-        graph_df = graph_df.sort_values(
-            "max_time"
-        )
-
-        if not graph_df.empty:
-
-            chart_data = graph_df[
-                [
-                    "max_time",
-                    "Activity Level"
-                ]
-            ].copy()
-
-            chart_data = chart_data.set_index(
-                "max_time"
-            )
-
-            chart_data.index = (
-                chart_data.index
-                .tz_convert(IST)
-            )
-
-            chart_data.columns = [
-                "Flare Activity"
-            ]
-
-            st.line_chart(
-                chart_data,
-                use_container_width=True
-            )
-
-            st.caption(
-                "Activity level derived from the observed "
-                "NOAA GOES flare class."
-            )
-
-        else:
-
-            st.info(
-                "No valid flare activity data available."
-            )
-
-
-except Exception as error:
-
-    st.error(
-        "NOAA flare data could not be loaded right now."
-    )
-
-    st.caption(
-        "The dashboard will continue to display the "
-        "solar observation panels."
+    st.info(
+        "Recent flare activity chart is unavailable "
+        "because NOAA data could not be loaded."
     )
 
 
