@@ -400,116 +400,56 @@ with p2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">☀️ Flare Classification</div>',
+    '<div class="section-title">🔥 Flare Classification</div>',
     unsafe_allow_html=True
 )
 
 st.caption(
-    "Solar X-ray flares are classified into five classes based on peak X-ray intensity."
+    "Solar X-ray flares are classified into five intensity classes."
 )
 
-f1, f2, f3, f4, f5 = st.columns(5)
+classifications = [
+    ("A", "Lowest intensity"),
+    ("B", "Low intensity"),
+    ("C", "Moderate intensity"),
+    ("M", "Strong intensity"),
+    ("X", "Highest intensity"),
+]
 
+cols = st.columns(5)
 
-with f1:
+for col, (flare_class, description) in zip(cols, classifications):
 
-    st.markdown(
-        """
-        <div class="classification-card">
+    with col:
 
-            <div class="classification-letter">
-                A
+        st.markdown(
+            f"""
+            <div class="card" style="
+                text-align:center;
+                min-height:135px;
+                padding:22px 10px;
+            ">
+
+                <div style="
+                    font-size:32px;
+                    font-weight:800;
+                    margin-bottom:8px;
+                ">
+                    {flare_class}
+                </div>
+
+                <div style="
+                    color:#9da6b8;
+                    font-size:13px;
+                    line-height:1.4;
+                ">
+                    {description}
+                </div>
+
             </div>
-
-            <div class="classification-text">
-                Lowest X-ray flare class
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with f2:
-
-    st.markdown(
-        """
-        <div class="classification-card">
-
-            <div class="classification-letter">
-                B
-            </div>
-
-            <div class="classification-text">
-                Low-level flare activity
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with f3:
-
-    st.markdown(
-        """
-        <div class="classification-card">
-
-            <div class="classification-letter">
-                C
-            </div>
-
-            <div class="classification-text">
-                Moderate flare activity
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with f4:
-
-    st.markdown(
-        """
-        <div class="classification-card">
-
-            <div class="classification-letter">
-                M
-            </div>
-
-            <div class="classification-text">
-                Strong flare activity
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with f5:
-
-    st.markdown(
-        """
-        <div class="classification-card">
-
-            <div class="classification-letter">
-                X
-            </div>
-
-            <div class="classification-text">
-                Highest flare class
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+            """,
+            unsafe_allow_html=True
+        )
 
 # ============================================================
 # LOAD REAL NOAA FLARE DATA
