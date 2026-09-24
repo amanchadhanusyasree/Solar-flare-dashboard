@@ -5,10 +5,9 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 
-
-\# ============================================================
-\# PAGE CONFIG
-\# ============================================================
+# ============================================================
+# PAGE CONFIG
+# ============================================================
 
 st.set_page_config(
     page_title="Solar Flare Forecasting",
@@ -17,37 +16,35 @@ st.set_page_config(
 )
 
 
-
-\# ============================================================
-\# CONSTANTS
-\# ============================================================
+# ============================================================
+# CONSTANTS
+# ============================================================
 
 IST = ZoneInfo("Asia/Kolkata")
 
 NOAA_FLARE_URL = (
-    "[https://services.swpc.noaa.gov/json/](https://services.swpc.noaa.gov/json/)"
+    "https://services.swpc.noaa.gov/json/"
     "goes/primary/xray-flares-7-day.json"
 )
 
 HMI_IMAGE = (
-    "[https://sdo.gsfc.nasa.gov/assets/img/latest/](https://sdo.gsfc.nasa.gov/assets/img/latest/)"
+    "https://sdo.gsfc.nasa.gov/assets/img/latest/"
     "latest_1024_HMIIF.jpg"
 )
 
 AIA_IMAGE = (
-    "[https://sdo.gsfc.nasa.gov/assets/img/latest/](https://sdo.gsfc.nasa.gov/assets/img/latest/)"
+    "https://sdo.gsfc.nasa.gov/assets/img/latest/"
     "latest_1024_0171.jpg"
 )
 
 
-
-\# ============================================================
-\# CUSTOM CSS
-\# ============================================================
+# ============================================================
+# CUSTOM CSS
+# ============================================================
 
 st.markdown(
     """
-    \<style>
+    <style>
 
     .stApp {
         background:
@@ -63,9 +60,9 @@ st.markdown(
             ),
             linear-gradient(
                 135deg,
-                \#050812 0%,
-                \#0a0f1c 50%,
-                \#080b14 100%
+                #050812 0%,
+                #0a0f1c 50%,
+                #080b14 100%
             );
         color: #f5f5f5;
     }
@@ -112,7 +109,7 @@ st.markdown(
                 rgba(255,100,20,0.16),
                 transparent 55%
             ),
-            \#111827;
+            #111827;
         border: 1px solid rgba(255,120,30,0.25);
         border-radius: 18px;
         padding: 28px;
@@ -163,34 +160,32 @@ st.markdown(
         margin-top: 30px;
     }
 
-    \</style>
+    </style>
     """,
     unsafe_allow_html=True
 )
 
 
-
-\# ============================================================
-\# HEADER
-\# ============================================================
+# ============================================================
+# HEADER
+# ============================================================
 
 st.markdown(
-    '\<div class="main-title">☀️ Solar Flare Forecasting\</div>',
+    '<div class="main-title">☀️ Solar Flare Forecasting</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '\<div class="subtitle">'
+    '<div class="subtitle">'
     'Solar activity monitoring and next-24-hour flare forecasting'
-    '\</div>',
+    '</div>',
     unsafe_allow_html=True
 )
 
 
-
-\# ============================================================
-\# CURRENT STATUS
-\# ============================================================
+# ============================================================
+# CURRENT STATUS
+# ============================================================
 
 current_time = datetime.now(IST)
 
@@ -217,26 +212,24 @@ with c3:
     )
 
 
-
-\# ============================================================
-\# SOLAR OBSERVATIONS
-\# ============================================================
+# ============================================================
+# SOLAR OBSERVATIONS
+# ============================================================
 
 st.markdown(
-    '\<div class="section-title">🔭 Solar Observations\</div>',
+    '<div class="section-title">🔭 Solar Observations</div>',
     unsafe_allow_html=True
 )
 
 obs1, obs2 = st.columns(2)
 
 
-
-\# ---------------- HMI ----------------
+# ---------------- HMI ----------------
 
 with obs1:
 
     st.markdown(
-        '\<div class="card">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -253,18 +246,17 @@ with obs1:
     )
 
     st.markdown(
-        '\</div>',
+        '</div>',
         unsafe_allow_html=True
     )
 
 
-
-\# ---------------- AIA ----------------
+# ---------------- AIA ----------------
 
 with obs2:
 
     st.markdown(
-        '\<div class="card">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -281,117 +273,112 @@ with obs2:
     )
 
     st.markdown(
-        '\</div>',
+        '</div>',
         unsafe_allow_html=True
     )
 
 
-
-\# ============================================================
-\# CURRENT FLARE
-\# ============================================================
+# ============================================================
+# CURRENT FLARE
+# ============================================================
 
 st.markdown(
-    '\<div class="section-title">🌞 Current Flare\</div>',
+    '<div class="section-title">🌞 Current Flare</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
     """
-    \<div class="current-flare">
-        \<div class="current-label">
+    <div class="current-flare">
+        <div class="current-label">
             CURRENT OBSERVED FLARE
-        \</div>
-        \<div class="current-value">
+        </div>
+        <div class="current-value">
             NONE
-        \</div>
-    \</div>
+        </div>
+    </div>
     """,
     unsafe_allow_html=True
 )
 
 
-
-\# ============================================================
-\# FLARE PREDICTION
-\# ============================================================
+# ============================================================
+# FLARE PREDICTION
+# ============================================================
 
 st.markdown(
-    '\<div class="section-title">🔥 Flare Prediction\</div>',
+    '<div class="section-title">🔥 Flare Prediction</div>',
     unsafe_allow_html=True
 )
 
 p1, p2 = st.columns([1, 1.7])
 
 
-
-\# ---------------- PREDICTION OUTPUT ----------------
+# ---------------- PREDICTION OUTPUT ----------------
 
 with p1:
 
     st.markdown(
         """
-        \<div class="prediction-card">
+        <div class="prediction-card">
 
-            \<div class="prediction-label">
+            <div class="prediction-label">
                 NEXT 24-HOUR FLARE PREDICTION
-            \</div>
+            </div>
 
-            \<div class="prediction-value">
+            <div class="prediction-value">
                 —
-            \</div>
+            </div>
 
-            \<div class="prediction-note">
+            <div class="prediction-note">
                 Prediction will appear after model inference
-            \</div>
+            </div>
 
-        \</div>
+        </div>
         """,
         unsafe_allow_html=True
     )
 
 
-
-\# ---------------- PREDICTION DESCRIPTION ----------------
+# ---------------- PREDICTION DESCRIPTION ----------------
 
 with p2:
 
     st.markdown(
         """
-        \<div class="card">
+        <div class="card">
 
-            \<h3>Forecasting Approach\</h3>
+            <h3>Forecasting Approach</h3>
 
-            \<p>
+            <p>
             Solar observations and recent flare activity are used
             as inputs for forecasting future solar flare activity.
-            \</p>
+            </p>
 
-            \<p>
-            \<b>Observation Data\</b>
+            <p>
+            <b>Observation Data</b>
             → Feature Extraction
             → Temporal Analysis
             → Flare Forecast
-            \</p>
+            </p>
 
-            \<p style="text-align\:center; font-size:20px;">
+            <p style="text-align:center; font-size:20px;">
             ↓
-            \</p>
+            </p>
 
-            \<p style="text-align\:center;">
-            \<b>Next 24-Hour Flare Risk\</b>
-            \</p>
+            <p style="text-align:center;">
+            <b>Next 24-Hour Flare Risk</b>
+            </p>
 
-        \</div>
+        </div>
         """,
         unsafe_allow_html=True
     )
 
 
-
-\# ============================================================
-\# LOAD REAL NOAA FLARE DATA
-\# ============================================================
+# ============================================================
+# LOAD REAL NOAA FLARE DATA
+# ============================================================
 
 @st.cache_data(ttl=300)
 def load_flare_data():
@@ -408,7 +395,6 @@ def load_flare_data():
     return pd.DataFrame(data)
 
 
-
 try:
 
     flare_df = load_flare_data()
@@ -421,9 +407,9 @@ try:
 
     else:
 
-        \# ----------------------------------------------------
-        \# CONVERT NOAA UTC TIME TO IST
-        \# ----------------------------------------------------
+        # ----------------------------------------------------
+        # CONVERT NOAA UTC TIME TO IST
+        # ----------------------------------------------------
 
         flare_df["max_time"] = pd.to_datetime(
             flare_df["max_time"],
@@ -436,7 +422,7 @@ try:
             .dt.tz_convert(IST)
         )
 
-        \# newest first
+        # newest first
 
         flare_df = flare_df.sort_values(
             "max_time",
@@ -444,15 +430,14 @@ try:
         )
 
 
-
-        \# ====================================================
-        \# RECENT SOLAR FLARES
-        \# ====================================================
+        # ====================================================
+        # RECENT SOLAR FLARES
+        # ====================================================
 
         st.markdown(
-            '\<div class="section-title">'
+            '<div class="section-title">'
             '🚨 Recent Solar Flares'
-            '\</div>',
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -472,7 +457,7 @@ try:
 
             "Satellite": (
                 "GOES-"
-                \+ recent_df[
+                + recent_df[
                     "satellite"
                 ].astype(str)
             )
@@ -490,18 +475,16 @@ try:
         )
 
 
-
-        \# ====================================================
-        \# RECENT FLARE ACTIVITY
-        \# ====================================================
+        # ====================================================
+        # RECENT FLARE ACTIVITY
+        # ====================================================
 
         st.markdown(
-            '\<div class="section-title">'
+            '<div class="section-title">'
             '📈 Recent Flare Activity'
-            '\</div>',
+            '</div>',
             unsafe_allow_html=True
         )
-
 
 
         def flare_level(flare_class):
@@ -530,13 +513,12 @@ try:
 
                 return (
                     base[letter]
-                    \+ number / 10
+                    + number / 10
                 )
 
             except Exception:
 
                 return None
-
 
 
         graph_df = flare_df.copy()
@@ -556,7 +538,6 @@ try:
         graph_df = graph_df.sort_values(
             "max_time"
         )
-
 
 
         if not graph_df.empty:
@@ -598,7 +579,6 @@ try:
             )
 
 
-
 except Exception:
 
     st.error(
@@ -611,38 +591,37 @@ except Exception:
     )
 
 
-
-\# ============================================================
-\# DATA SOURCES
-\# ============================================================
+# ============================================================
+# DATA SOURCES
+# ============================================================
 
 st.markdown("---")
 
 st.markdown(
-    '\<div class="footer">'
+    '<div class="footer">'
     'Solar imagery: NASA Solar Dynamics Observatory '
     '(SDO/HMI + SDO/AIA)'
-    '\</div>',
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '\<div class="footer">'
+    '<div class="footer">'
     'Flare observations: NOAA / SWPC GOES'
-    '\</div>',
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '\<div class="footer">'
+    '<div class="footer">'
     'All dashboard times are displayed in IST (UTC+05:30)'
-    '\</div>',
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '\<div class="footer">'
+    '<div class="footer">'
     'Solar Flare Forecasting System — SIH Software Prototype'
-    '\</div>',
+    '</div>',
     unsafe_allow_html=True
 )
