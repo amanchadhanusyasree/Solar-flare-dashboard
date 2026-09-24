@@ -369,25 +369,40 @@ try:
 
         recent_df = flare_df.head(10).copy()
 
-        recent_table = pd.DataFrame({
+       recent_table = pd.DataFrame({
 
-            "Time (IST)": recent_df[
-                "max_time_ist"
-            ].dt.strftime(
-                "%d %b %Y  %I:%M %p"
-            ),
+    "Time (IST)": recent_df[
+        "max_time_ist"
+    ].dt.strftime(
+        "%d %b %Y  %I:%M %p"
+    ),
 
-            "Flare Class": recent_df[
-                "max_class"
-            ].astype(str),
+    "Flare Class": recent_df[
+        "max_class"
+    ].astype(str),
 
-            "Satellite": (
-                "GOES-"
-                + recent_df[
-                    "satellite"
-                ].astype(str)
-            )
+    "Classification": (
+        recent_df["max_class"]
+        .astype(str)
+        .str[0]
+        .str.upper()
+        .map({
+            "A": "A-Class",
+            "B": "B-Class",
+            "C": "C-Class",
+            "M": "M-Class",
+            "X": "X-Class"
         })
+        .fillna("Unknown")
+    ),
+
+    "Satellite": (
+        "GOES-"
+        + recent_df[
+            "satellite"
+        ].astype(str)
+    )
+})
 
         st.dataframe(
             recent_table,
