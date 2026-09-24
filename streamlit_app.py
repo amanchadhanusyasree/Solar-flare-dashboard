@@ -362,7 +362,7 @@ try:
 
         st.markdown(
             '<div class="section-title">'
-            '🚨 Recent Solar Flares'
+            '🚨 Recent Solar Eruptions'
             '</div>',
             unsafe_allow_html=True
         )
