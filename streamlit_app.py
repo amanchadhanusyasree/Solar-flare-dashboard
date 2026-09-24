@@ -190,29 +190,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 # ============================================================
-# HEADER + TEJAS LOGO
+# HEADER
 # ============================================================
 
 logo_col1, logo_col2, logo_col3 = st.columns([1, 2, 1])
 
 with logo_col2:
-
-    if LOGO_IMAGE.exists():
-
-        st.image(
-            str(LOGO_IMAGE),
-            width=320
-        )
-
-    else:
-
-        st.warning(
-            "TEJAS logo not found. "
-            "Place 'tejas_logo.png' in the same folder as this Python file."
-        )
-
+    st.image(
+        str(LOGO_IMAGE),
+        width=300
+    )
 
 st.markdown(
     '<div class="main-title">☀️ Solar Flare Forecasting</div>',
@@ -226,8 +214,6 @@ st.markdown(
     '</div>',
     unsafe_allow_html=True
 )
-
-
 # ============================================================
 # CURRENT STATUS
 # ============================================================
