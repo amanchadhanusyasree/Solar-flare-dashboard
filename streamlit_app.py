@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from pathlib import Path
 
 
 # ============================================================
@@ -21,6 +22,10 @@ st.set_page_config(
 # ============================================================
 
 IST = ZoneInfo("Asia/Kolkata")
+
+BASE_DIR = Path(__file__).resolve().parent
+
+LOGO_IMAGE = BASE_DIR / "tejas_logo.png"
 
 NOAA_FLARE_URL = (
     "https://services.swpc.noaa.gov/json/"
@@ -68,9 +73,21 @@ st.markdown(
     }
 
     .block-container {
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
     }
+
+    /* ================= LOGO ================= */
+
+    .logo-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: -5px;
+        margin-bottom: 8px;
+    }
+
+    /* ================= HEADER ================= */
 
     .main-title {
         font-size: 42px;
@@ -86,12 +103,16 @@ st.markdown(
         margin-bottom: 25px;
     }
 
+    /* ================= SECTION TITLES ================= */
+
     .section-title {
         font-size: 25px;
         font-weight: 700;
         margin-top: 28px;
         margin-bottom: 15px;
     }
+
+    /* ================= CARDS ================= */
 
     .card {
         background: rgba(18, 24, 39, 0.92);
@@ -133,6 +154,8 @@ st.markdown(
         font-size: 13px;
     }
 
+    /* ================= CURRENT FLARE ================= */
+
     .current-flare {
         background: rgba(18, 24, 39, 0.92);
         border: 1px solid rgba(255,255,255,0.08);
@@ -153,6 +176,8 @@ st.markdown(
         margin-top: 3px;
     }
 
+    /* ================= FOOTER ================= */
+
     .footer {
         text-align: center;
         color: #70798b;
@@ -167,8 +192,27 @@ st.markdown(
 
 
 # ============================================================
-# HEADER
+# HEADER + TEJAS LOGO
 # ============================================================
+
+logo_col1, logo_col2, logo_col3 = st.columns([1, 2, 1])
+
+with logo_col2:
+
+    if LOGO_IMAGE.exists():
+
+        st.image(
+            str(LOGO_IMAGE),
+            width=320
+        )
+
+    else:
+
+        st.warning(
+            "TEJAS logo not found. "
+            "Place 'tejas_logo.png' in the same folder as this Python file."
+        )
+
 
 st.markdown(
     '<div class="main-title">☀️ Solar Flare Forecasting</div>',
@@ -177,7 +221,8 @@ st.markdown(
 
 st.markdown(
     '<div class="subtitle">'
-    'Deep Learning Based Solar Flare Classification and 24-Hour Flare Risk Forecasting'
+    'Deep Learning Based Solar Flare Classification and '
+    'Early Warning of Solar Flare Activity'
     '</div>',
     unsafe_allow_html=True
 )
@@ -191,24 +236,33 @@ current_time = datetime.now(IST)
 
 c1, c2, c3 = st.columns(3)
 
+
 with c1:
+
     st.metric(
         "Monitoring",
         "SOLAR ACTIVITY"
     )
 
+
 with c2:
+
     st.metric(
-        "predicated",
+        "Forecasting",
         "EARLY WARNING"
     )
+
+
 with c3:
+
     st.metric(
         "Updated",
         current_time.strftime(
             "%d %b %Y, %I:%M %p IST"
         )
     )
+
+
 # ============================================================
 # SOLAR OBSERVATIONS
 # ============================================================
@@ -221,7 +275,9 @@ st.markdown(
 obs1, obs2 = st.columns(2)
 
 
-# ---------------- HMI ----------------
+# ============================================================
+# HMI
+# ============================================================
 
 with obs1:
 
@@ -248,7 +304,9 @@ with obs1:
     )
 
 
-# ---------------- AIA ----------------
+# ============================================================
+# AIA
+# ============================================================
 
 with obs2:
 
@@ -290,6 +348,7 @@ st.markdown(
         <div class="current-label">
             CURRENT OBSERVED FLARE
         </div>
+
         <div class="current-value">
             NONE
         </div>
@@ -330,9 +389,9 @@ try:
 
     else:
 
-        # ----------------------------------------------------
+        # ====================================================
         # CONVERT NOAA UTC TIME TO IST
-        # ----------------------------------------------------
+        # ====================================================
 
         flare_df["max_time"] = pd.to_datetime(
             flare_df["max_time"],
@@ -345,7 +404,7 @@ try:
             .dt.tz_convert(IST)
         )
 
-        # newest first
+        # Newest first
 
         flare_df = flare_df.sort_values(
             "max_time",
@@ -387,6 +446,10 @@ try:
         )
 
 
+        # ====================================================
+        # RECENT FLARE TABLE
+        # ====================================================
+
         recent_table = pd.DataFrame({
 
             "Time (IST)": recent_df[
@@ -411,11 +474,13 @@ try:
             )
         })
 
+
         st.dataframe(
             recent_table,
             use_container_width=True,
             hide_index=True
         )
+
 
         st.caption(
             "Source: NOAA GOES X-ray flare observations. "
@@ -434,7 +499,9 @@ try:
             unsafe_allow_html=True
         )
 
+
         classification_df = pd.DataFrame({
+
             "Class": [
                 "A-Class",
                 "B-Class",
@@ -460,11 +527,13 @@ try:
             ]
         })
 
+
         st.dataframe(
             classification_df,
             use_container_width=True,
             hide_index=True
         )
+
 
         st.caption(
             "Solar flares are classified according to their "
@@ -483,6 +552,10 @@ try:
             unsafe_allow_html=True
         )
 
+
+        # ====================================================
+        # CONVERT FLARE CLASS TO ACTIVITY LEVEL
+        # ====================================================
 
         def flare_level(flare_class):
 
@@ -537,6 +610,10 @@ try:
         )
 
 
+        # ====================================================
+        # ACTIVITY GRAPH
+        # ====================================================
+
         if not graph_df.empty:
 
             chart_data = graph_df[
@@ -576,7 +653,7 @@ try:
             )
 
 
-except Exception:
+except Exception as e:
 
     st.error(
         "NOAA flare data could not be loaded right now."
@@ -594,6 +671,7 @@ except Exception:
 
 st.markdown("---")
 
+
 st.markdown(
     '<div class="footer">'
     'Solar imagery: NASA Solar Dynamics Observatory '
@@ -602,6 +680,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 st.markdown(
     '<div class="footer">'
     'Flare observations: NOAA / SWPC GOES'
@@ -609,12 +688,14 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 st.markdown(
     '<div class="footer">'
     'All dashboard times are displayed in IST (UTC+05:30)'
     '</div>',
     unsafe_allow_html=True
 )
+
 
 st.markdown(
     '<div class="footer">'
