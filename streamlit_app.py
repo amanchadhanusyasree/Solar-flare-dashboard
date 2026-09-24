@@ -319,6 +319,22 @@ def load_flare_data():
     data = response.json()
 
     return pd.DataFrame(data)
+    def classify_flare(flare_class):
+
+    if not isinstance(flare_class, str):
+        return "Unknown"
+
+    letter = flare_class.strip().upper()[0]
+
+    classifications = {
+        "A": "A-Class — Minor",
+        "B": "B-Class — Low",
+        "C": "C-Class — Moderate",
+        "M": "M-Class — Strong",
+        "X": "X-Class — Extreme"
+    }
+
+    return classifications.get(letter, "Unknown")
 
 
 try:
