@@ -169,7 +169,6 @@ st.markdown(
 # ============================================================
 # TOP STATUS
 # ============================================================
-
 c1, c2, c3 = st.columns(3)
 
 with c1:
@@ -181,12 +180,11 @@ with c2:
 with c3:
     from zoneinfo import ZoneInfo
 
-current_time = datetime.now(
-    ZoneInfo("Asia/Kolkata")
-).strftime("%d %b %Y, %H:%M IST")
+    current_time = datetime.now(
+        ZoneInfo("Asia/Kolkata")
+    ).strftime("%d %b %Y, %H:%M IST")
+
     st.metric("Updated", current_time)
-
-
 # ============================================================
 # SOLAR OBSERVATIONS
 # ============================================================
