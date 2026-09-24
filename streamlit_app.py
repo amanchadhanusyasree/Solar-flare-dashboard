@@ -369,6 +369,27 @@ try:
 
         recent_df = flare_df.head(10).copy()
 
+
+        # ====================================================
+        # FLARE CLASSIFICATION
+        # ====================================================
+
+        recent_df["Classification"] = (
+            recent_df["max_class"]
+            .astype(str)
+            .str[0]
+            .str.upper()
+            .map({
+                "A": "A-Class",
+                "B": "B-Class",
+                "C": "C-Class",
+                "M": "M-Class",
+                "X": "X-Class"
+            })
+            .fillna("Unknown")
+        )
+
+
         recent_table = pd.DataFrame({
 
             "Time (IST)": recent_df[
@@ -380,6 +401,10 @@ try:
             "Flare Class": recent_df[
                 "max_class"
             ].astype(str),
+
+            "Classification": recent_df[
+                "Classification"
+            ],
 
             "Satellite": (
                 "GOES-"
