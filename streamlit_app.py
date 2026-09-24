@@ -200,7 +200,8 @@ with c1:
 with c2:
     st.metric(
         "Forecast Horizon",
-        "Early Warning of Solar Flares"
+        "Early Warning of Solar 
+        Flares"
     )
 
 with c3:
