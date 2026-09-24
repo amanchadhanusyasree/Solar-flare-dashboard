@@ -42,162 +42,178 @@ AIA_IMAGE = (
 # CUSTOM CSS
 # ============================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-.stApp {
-    background:
-        radial-gradient(
-            circle at 88% 8%,
-            rgba(255, 105, 20, 0.13),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(255, 70, 10, 0.07),
-            transparent 30%
-        ),
-        linear-gradient(
-            135deg,
-            #050812 0%,
-            #0a0f1c 50%,
-            #080b14 100%
-        );
-    color: #f5f5f5;
-}
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 88% 8%,
+                rgba(255, 105, 20, 0.13),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 10% 90%,
+                rgba(255, 70, 10, 0.07),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #050812 0%,
+                #0a0f1c 50%,
+                #080b14 100%
+            );
 
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
+        color: #f5f5f5;
+    }
 
-.main-title {
-    font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 0;
-}
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
 
-.subtitle {
-    color: #a9b1c2;
-    font-size: 16px;
-    margin-top: 5px;
-    margin-bottom: 25px;
-}
+    .main-title {
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 0;
+    }
 
-.section-title {
-    font-size: 25px;
-    font-weight: 700;
-    margin-top: 28px;
-    margin-bottom: 15px;
-}
+    .subtitle {
+        color: #a9b1c2;
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 25px;
+    }
 
-.card {
-    background: rgba(18, 24, 39, 0.92);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 10px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.20);
-}
+    .section-title {
+        font-size: 25px;
+        font-weight: 700;
+        margin-top: 28px;
+        margin-bottom: 15px;
+    }
 
-.prediction-card {
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(255,100,20,0.16),
-            transparent 55%
-        ),
-        #111827;
-    border: 1px solid rgba(255,120,30,0.25);
-    border-radius: 18px;
-    padding: 24px;
-    text-align: center;
-}
+    .card {
+        background: rgba(18, 24, 39, 0.92);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.20);
+    }
 
-.prediction-label {
-    color: #9da6b8;
-    font-size: 13px;
-    letter-spacing: 1px;
-}
+    .current-flare-card {
+        background:
+            radial-gradient(
+                circle at 50% 0%,
+                rgba(255,100,20,0.20),
+                transparent 60%
+            ),
+            #111827;
 
-.prediction-value {
-    font-size: 42px;
-    font-weight: 800;
-    margin: 8px 0;
-}
+        border: 1px solid rgba(255,120,30,0.30);
+        border-radius: 18px;
+        padding: 28px;
+        text-align: center;
+        min-height: 190px;
+    }
 
-.prediction-note {
-    color: #9da6b8;
-    font-size: 13px;
-}
+    .current-flare-label {
+        color: #9da6b8;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
 
-.current-flare-card {
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(255,100,20,0.20),
-            transparent 60%
-        ),
-        #111827;
-    border: 1px solid rgba(255,120,30,0.30);
-    border-radius: 18px;
-    padding: 24px;
-    text-align: center;
-}
+    .current-flare-value {
+        font-size: 60px;
+        font-weight: 800;
+        margin: 8px 0;
+    }
 
-.current-flare-value {
-    font-size: 55px;
-    font-weight: 850;
-    margin: 5px 0;
-}
+    .prediction-card {
+        background:
+            radial-gradient(
+                circle at 50% 0%,
+                rgba(255,100,20,0.16),
+                transparent 55%
+            ),
+            #111827;
 
-.current-flare-label {
-    color: #9da6b8;
-    font-size: 13px;
-}
+        border: 1px solid rgba(255,120,30,0.25);
+        border-radius: 18px;
+        padding: 28px;
+        text-align: center;
+        min-height: 190px;
+    }
 
-.scale-box {
-    background: #111827;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 20px;
-}
+    .prediction-label {
+        color: #9da6b8;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
 
-.scale-item {
-    padding: 10px 14px;
-    margin: 7px 0;
-    border-radius: 9px;
-    background: rgba(255,255,255,0.04);
-}
+    .prediction-value {
+        font-size: 52px;
+        font-weight: 800;
+        margin: 8px 0;
+    }
 
-.eval-box {
-    background: #111827;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-}
+    .prediction-note {
+        color: #9da6b8;
+        font-size: 13px;
+    }
 
-.eval-number {
-    font-size: 30px;
-    font-weight: 700;
-}
+    .scale-box {
+        background: #111827;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+        min-height: 115px;
+    }
 
-.eval-label {
-    color: #9da6b8;
-    font-size: 13px;
-}
+    .scale-letter {
+        font-size: 30px;
+        font-weight: 800;
+        text-align: center;
+    }
 
-.footer {
-    text-align: center;
-    color: #70798b;
-    font-size: 12px;
-    margin-top: 30px;
-}
+    .scale-description {
+        color: #9da6b8;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 6px;
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    .eval-box {
+        background: #111827;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .eval-number {
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .eval-label {
+        color: #9da6b8;
+        font-size: 13px;
+    }
+
+    .footer {
+        text-align: center;
+        color: #70798b;
+        font-size: 12px;
+        margin-top: 15px;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -247,7 +263,7 @@ with c3:
 
 
 # ============================================================
-# LOAD REAL NOAA FLARE DATA
+# NOAA FLARE DATA
 # ============================================================
 
 @st.cache_data(ttl=300)
@@ -260,13 +276,12 @@ def load_flare_data():
 
     response.raise_for_status()
 
-    data = response.json()
-
-    return pd.DataFrame(data)
+    return pd.DataFrame(response.json())
 
 
 flare_df = pd.DataFrame()
 noaa_available = False
+
 
 try:
 
@@ -281,8 +296,7 @@ try:
         )
 
         flare_df["max_time_ist"] = (
-            flare_df["max_time"]
-            .dt.tz_convert(IST)
+            flare_df["max_time"].dt.tz_convert(IST)
         )
 
         flare_df = flare_df.sort_values(
@@ -374,13 +388,15 @@ st.markdown(
 
 
 # ============================================================
-# SAMPLE CURRENT FLARE
+# CURRENT FLARE + NEXT 24 HOUR PREDICTION
 # ============================================================
 
-current_col, prediction_col = st.columns([1, 1.7])
+p1, p2 = st.columns([1, 1.7])
 
 
-with current_col:
+# ---------------- CURRENT FLARE ----------------
+
+with p1:
 
     st.markdown(
         """
@@ -404,11 +420,9 @@ with current_col:
     )
 
 
-# ============================================================
-# NEXT 24-HOUR PREDICTION
-# ============================================================
+# ---------------- NEXT 24 HOUR PREDICTION ----------------
 
-with prediction_col:
+with p2:
 
     st.markdown(
         """
@@ -433,15 +447,18 @@ with prediction_col:
 
 
 # ============================================================
-# ALL FIVE FLARE CLASSES
+# FLARE CLASSIFICATION
 # ============================================================
 
-st.subheader("Flare Classification")
+st.markdown(
+    '<div class="section-title">☀️ Flare Classification</div>',
+    unsafe_allow_html=True
+)
 
 st.caption(
-    "The forecasting model will classify flare activity "
-    "across all five X-ray classes."
+    "The system considers all five X-ray flare classes."
 )
+
 
 flare_classes = [
     ("A", "Lowest X-ray flare level"),
@@ -451,7 +468,9 @@ flare_classes = [
     ("X", "Highest flare activity")
 ]
 
+
 class_cols = st.columns(5)
+
 
 for col, (flare_class, description) in zip(
     class_cols,
@@ -464,20 +483,11 @@ for col, (flare_class, description) in zip(
             f"""
             <div class="scale-box">
 
-                <div style="
-                    font-size:28px;
-                    font-weight:800;
-                    text-align:center;
-                ">
+                <div class="scale-letter">
                     {flare_class}
                 </div>
 
-                <div style="
-                    color:#9da6b8;
-                    font-size:12px;
-                    text-align:center;
-                    margin-top:5px;
-                ">
+                <div class="scale-description">
                     {description}
                 </div>
 
@@ -488,7 +498,7 @@ for col, (flare_class, description) in zip(
 
 
 # ============================================================
-# CURRENT / RECENT REAL FLARES
+# CURRENT & RECENT SOLAR FLARES
 # ============================================================
 
 st.markdown(
@@ -498,39 +508,41 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 if noaa_available:
 
-    current_flares = flare_df.head(8).copy()
+    recent_df = flare_df.head(10).copy()
 
-    current_table = pd.DataFrame({
+    recent_table = pd.DataFrame({
 
-        "Time (IST)": current_flares[
+        "Time (IST)": recent_df[
             "max_time_ist"
         ].dt.strftime(
             "%d %b %Y  %I:%M %p"
         ),
 
-        "Flare Class": current_flares[
+        "Flare Class": recent_df[
             "max_class"
         ].astype(str),
 
         "Satellite": (
             "GOES-"
-            + current_flares[
+            + recent_df[
                 "satellite"
             ].astype(str)
         )
+
     })
 
     st.dataframe(
-        current_table,
+        recent_table,
         use_container_width=True,
         hide_index=True
     )
 
     st.caption(
-        "Real observed GOES flare events from NOAA/SWPC. "
-        "All times are displayed in IST."
+        "Real observed GOES X-ray flare events from NOAA/SWPC. "
+        "Times are displayed in IST."
     )
 
 else:
@@ -549,50 +561,49 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-target_col1, target_col2 = st.columns(2)
+t1, t2 = st.columns(2)
 
-with target_col1:
+
+with t1:
 
     st.markdown(
-        '<div class="card">',
+        """
+        <div class="card">
+
+            <h3>Prediction Window</h3>
+
+            <p>
+                <b>Next 24 hours</b>
+            </p>
+
+            <p>
+                Target: A, B, C, M and X-class flare activity
+            </p>
+
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
-    st.subheader("Prediction Window")
 
-    st.write(
-        "Next 24 hours"
-    )
-
-    st.write(
-        "Target: A, B, C, M and X-class flare activity"
-    )
+with t2:
 
     st.markdown(
-        '</div>',
-        unsafe_allow_html=True
-    )
+        """
+        <div class="card">
 
+            <h3>Model Status</h3>
 
-with target_col2:
+            <p>
+                <b>Software Prototype</b>
+            </p>
 
-    st.markdown(
-        '<div class="card">',
-        unsafe_allow_html=True
-    )
+            <p>
+                Waiting for trained-model inference
+            </p>
 
-    st.subheader("Model Status")
-
-    st.write(
-        "Prototype dashboard"
-    )
-
-    st.write(
-        "Waiting for trained-model inference"
-    )
-
-    st.markdown(
-        '</div>',
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
@@ -608,53 +619,86 @@ st.markdown(
 
 e1, e2, e3, e4 = st.columns(4)
 
+
 with e1:
 
     st.markdown(
         """
         <div class="eval-box">
-            <div class="eval-number">—</div>
-            <div class="eval-label">TSS</div>
+
+            <div class="eval-number">
+                —
+            </div>
+
+            <div class="eval-label">
+                TSS
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 with e2:
 
     st.markdown(
         """
         <div class="eval-box">
-            <div class="eval-number">—</div>
-            <div class="eval-label">Accuracy</div>
+
+            <div class="eval-number">
+                —
+            </div>
+
+            <div class="eval-label">
+                Accuracy
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 with e3:
 
     st.markdown(
         """
         <div class="eval-box">
-            <div class="eval-number">—</div>
-            <div class="eval-label">Precision</div>
+
+            <div class="eval-number">
+                —
+            </div>
+
+            <div class="eval-label">
+                Precision
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 with e4:
 
     st.markdown(
         """
         <div class="eval-box">
-            <div class="eval-number">—</div>
-            <div class="eval-label">Recall</div>
+
+            <div class="eval-number">
+                —
+            </div>
+
+            <div class="eval-label">
+                Recall
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 st.caption(
     "Evaluation metrics will be populated after the forecasting "
@@ -707,8 +751,7 @@ if noaa_available:
     graph_df = flare_df.copy()
 
     graph_df["Activity Level"] = (
-        graph_df["max_class"]
-        .apply(flare_level)
+        graph_df["max_class"].apply(flare_level)
     )
 
     graph_df = graph_df.dropna(
@@ -736,8 +779,7 @@ if noaa_available:
         )
 
         chart_data.index = (
-            chart_data.index
-            .tz_convert(IST)
+            chart_data.index.tz_convert(IST)
         )
 
         chart_data.columns = [
