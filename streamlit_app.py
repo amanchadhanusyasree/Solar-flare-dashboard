@@ -338,25 +338,23 @@ with obs2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🌞 Live Solar Flare Activity</div>',
-    unsafe_allow_html=True
+'<div class="section-title">🌞 Live Solar Flare Activity</div>',
+unsafe_allow_html=True
 )
 
 st.markdown(
-    """
-    <div class="current-flare">
-        <div class="current-label">
-            CURRENT OBSERVED FLARE
-        </div>
-
-        <div class="current-value">
-            NONE
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
+"""
+<div class="current-flare">
+<div class="current-label">
+CURRENT OBSERVED FLARE
+</div>
+<div class="current-value">
+NONE
+</div>
+</div>
+""",
+unsafe_allow_html=True
 )
-
 
 # ============================================================
 # LOAD REAL NOAA FLARE DATA
