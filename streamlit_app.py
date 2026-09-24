@@ -427,6 +427,55 @@ try:
 
 
         # ====================================================
+        # FLARE CLASSIFICATION REFERENCE
+        # ====================================================
+
+        st.markdown(
+            '<div class="section-title">'
+            '📊 Flare Classification'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+        classification_df = pd.DataFrame({
+            "Class": [
+                "A-Class",
+                "B-Class",
+                "C-Class",
+                "M-Class",
+                "X-Class"
+            ],
+
+            "Relative Strength": [
+                "Lowest",
+                "Low",
+                "Moderate",
+                "Strong",
+                "Highest"
+            ],
+
+            "Typical Effect": [
+                "Very small",
+                "Minor",
+                "Moderate",
+                "Strong",
+                "Most intense"
+            ]
+        })
+
+        st.dataframe(
+            classification_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.caption(
+            "Solar flares are classified according to their "
+            "peak X-ray intensity in the 1–8 Å wavelength band."
+        )
+
+
+        # ====================================================
         # RECENT FLARE ACTIVITY
         # ====================================================
 
