@@ -283,7 +283,7 @@ with obs2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🌞 Current Flare</div>',
+    '<div class="section-title">🌞 Live Solar Flare Activity</div>',
     unsafe_allow_html=True
 )
 
