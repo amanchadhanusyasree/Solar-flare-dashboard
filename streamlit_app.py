@@ -179,9 +179,11 @@ with c2:
     st.metric("Forecast Horizon", "NEXT 24 HOURS")
 
 with c3:
-    current_time = datetime.now(timezone.utc).strftime(
-        "%d %b %Y, %H:%M UTC"
-    )
+    from zoneinfo import ZoneInfo
+
+current_time = datetime.now(
+    ZoneInfo("Asia/Kolkata")
+).strftime("%d %b %Y, %H:%M IST")
     st.metric("Updated", current_time)
 
 
