@@ -430,12 +430,11 @@ try:
 
             if "Time" in display_df.columns:
 
-                display_df["Time"] = (
-                    display_df["Time"]
-                    .dt.strftime(
-                        "%d %b %Y  %H:%M UTC"
-                    )
-                )
+                ddisplay_df["Time"] = (
+    display_df["Time"]
+    .dt.tz_convert("Asia/Kolkata")
+    .dt.strftime("%d %b %Y  %H:%M IST")
+)
 
             st.dataframe(
                 display_df,
