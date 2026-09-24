@@ -336,7 +336,6 @@ def load_flare_data():
 
     return classifications.get(letter, "Unknown")
 
-
 try:
 
     flare_df = load_flare_data()
